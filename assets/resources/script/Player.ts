@@ -15,6 +15,7 @@ export class Player extends Component {
 
     start() {
         input.on(Input.EventType.KEY_DOWN, this.inputMovement,this);
+       
         this.curPos = this.node.getPosition();
     }
     timerIncre(){
@@ -52,9 +53,7 @@ export class Player extends Component {
         }
         
         this.node.setPosition(newPosx,newPosy,0);
-            
-        // }
-        // }
+
     }
 
     inputMovement(event: EventKeyboard){
@@ -65,22 +64,14 @@ export class Player extends Component {
                 if(this.xMovement>-2){
                     this.xMovement--;
                 }
-                // this.node.setPosition(new Vec3(this.curPos.x-1,this.curPos.y,0));
-                // console.log(this.curPos.x);
+      
                 break;
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
                 if(this.xMovement<2){
                     this.xMovement++;
                 }
-                // this.node.setPosition(new Vec3(this.curPos.x-1,this.curPos.y,0));
-                // console.log(this.curPos.x);
                 break;
-            case KeyCode.ARROW_UP:
-            case KeyCode.KEY_W:
-                if(this.yMovement==0){
-                    this.yMovement =5 ;
-                }
         }
     }
 }
