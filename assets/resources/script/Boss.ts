@@ -19,30 +19,38 @@ export class Boss extends Component {
         this.rb = this.node.getComponent(RigidBody2D);
         this.circleC = this.node.getComponent(CircleCollider2D);
         this.horizontal = 0;
-        this.speed = 8;
+        this.speed = 4;
     }
 
     update(deltaTime: number) {
         let playerPosX = this.player.getPosition().x;
         let bossPosX = this.node.getPosition().x;
 
-        if (Math.abs(bossPosX - playerPosX) >(this.node.getComponent(UITransform).contentSize.x) ||
-            Math.abs(bossPosX - playerPosX) >=0){
+        if (Math.abs(bossPosX - playerPosX)
+                > (this.node.getComponent(UITransform).contentSize.x/2)-1){
+
             if(playerPosX < bossPosX) {
                 this.horizontal = -0.5;
                 if(this.isFacingRight) this.flip();
                 // this.flip();
             }
-            else {
+            else if (playerPosX > bossPosX) {
                 this.horizontal = 0.5;
                 if(!this.isFacingRight) this.flip();
                 // this.flip();
             }
+
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+            // console.log(Math.abs(bossPosX - playerPosX));
         }
         
 
     }
+
+    knockback(){
+        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*0.5, this.rb.linearVelocity.y*0.5);
+    }
+
     flip(){
         let scale = this.node.getScale();
         this.node.setScale(scale.x*-1, scale.y,scale.z);

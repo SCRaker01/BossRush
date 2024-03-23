@@ -30,8 +30,9 @@ export class Player extends Component {
         this.speed = 8;
         
     }
+
     start(){
-        this.collider.on(Contact2DType.BEGIN_CONTACT,this.onCollision,this);
+        this.collider.on(Contact2DType.BEGIN_CONTACT,this.gotHit,this);
         
     }
 
@@ -51,13 +52,13 @@ export class Player extends Component {
         this.isFacingRight = !this.isFacingRight;
     }
 
-    onCollision(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
+    gotHit(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
       
         if(otherCollider.tag==2){               //Ground
-            
         }
         if(otherCollider.tag==0){               //Boss
-            console.log(otherCollider.name);
+            // console.log(otherCollider.name);
+            // this.knockback();
         }
 
     }
@@ -66,20 +67,21 @@ export class Player extends Component {
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
-                if(!this.isFacingRight){
+                if(this.isFacingRight){
                     this.flip();
                 }
                 this.horizontal=1;
                 break;
-                case KeyCode.ARROW_LEFT:
-                    case KeyCode.KEY_A:
-                    if(this.isFacingRight){
-                        this.flip();
-                    }
-                    this.horizontal=-1;
+            case KeyCode.ARROW_LEFT:
+            case KeyCode.KEY_A:
+                if(!this.isFacingRight){
+                    this.flip();
+                }
+                this.horizontal=-1;
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
+
                 this.isJumping = true;
                 break;
         }
@@ -94,6 +96,14 @@ export class Player extends Component {
                 this.horizontal=0;
                 break;
         }
+    }
+
+    knockback(){
+        // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*1.5, this.jumpForce*1.5);
+    }
+
+    hit(){
+
     }
     
 }
