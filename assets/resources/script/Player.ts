@@ -1,5 +1,4 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, Collider2D, IPhysics2DContact, Input, EventKeyboard, Vec3 } from 'cc';
-import { Physics } from './Physics';
 import { KeyCode } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -40,11 +39,9 @@ export class Player extends Component {
         
         this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
         
-
         if(this.isJumping && this.rb.linearVelocity.y>0){
-            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*0.5);
+            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
             this.isJumping=false;
-
         }
     }
 
