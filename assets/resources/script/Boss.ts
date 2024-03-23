@@ -12,18 +12,7 @@ export class Boss extends Component {
     }
 
     update(deltaTime: number) {
-        if (this.vy>-200){
-            this.vy -= this.phy.gravity*deltaTime*0.5;
-        }
-        this.node.translate(new Vec3(0,2*this.vy*deltaTime,0));
-
-        let curPos = this.node.getPosition();
-        
     
-        if(curPos.y <= this.phy.baseY+18) {
-            curPos.y = this.phy.baseY+18;
-        }
-        this.node.setPosition(curPos);
     }
 }
 

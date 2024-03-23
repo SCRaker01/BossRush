@@ -1,4 +1,4 @@
-import { _decorator, CCFloat, Component, EventKeyboard, Input, input, Node, RigidBody2D, SystemEvent, Vec2, Vec3 } from 'cc';
+import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, Collider2D, IPhysics2DContact, Input, EventKeyboard, Vec3 } from 'cc';
 import { Physics } from './Physics';
 import { KeyCode } from 'cc';
 const { ccclass, property } = _decorator;
@@ -6,110 +6,99 @@ const { ccclass, property } = _decorator;
 @ccclass('Player')
 export class Player extends Component {
     
-    @property({type:Physics}) private phy: Physics;
+    @property({type: CCFloat}) private jumpForce:number;
+    
     private vy :number=0;
-    private curPos:Vec3;
-    private xMovement:number=0;
-    private yMovement:number=0;
 
     private rb:RigidBody2D;
-    private isMovingRight:boolean = false;
-    private isMovingLeft:boolean = false;
-    private isMovingY:boolean = false;
-    private doubleJump:boolean = false;
+    private circleC:CircleCollider2D;
+    private horizontal:number;
+    private speed:number;
+    private isJumping:boolean;
+    private collider;
+    private isFacingRight;
 
+   
     onLoad() {
-        input.on(Input.EventType.KEY_DOWN, this.inputMovement,this);
-        input.on(Input.EventType.KEY_UP, this.cancelMovement,this);
-        this.rb = this.getComponent(RigidBody2D);
-        this.curPos = this.node.getPosition();
+        input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
+        input.on(Input.EventType.KEY_UP,this.keyUp,this);
+
+        this.collider = this.node.getComponent(Collider2D); 
+        
+        this.rb = this.node.getComponent(RigidBody2D);
+        this.circleC = this.node.getComponent(CircleCollider2D);
+        this.horizontal = 0;
+        this.speed = 8;
+        
+    }
+    start(){
+        this.collider.on(Contact2DType.BEGIN_CONTACT,this.onCollision,this);
+        
     }
 
     update(deltaTime: number) {
-
         
-        if (this.vy>-800){
-            this.vy -= this.phy.gravity*deltaTime*0.5;
-        }
-        this.node.translate(new Vec3(0,this.vy*deltaTime,0));
-
-        // console.log(this.phy.baseY);
-        this.curPos = this.node.getPosition();
-        // console.log(this.curPos.y );
-    
-        if(this.curPos.y <= this.phy.baseY+18) {
-            this.curPos.y = this.phy.baseY+18;
-        }        
-        this.node.setPosition(this.curPos);
+        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
         
-        let newPosx= this.curPos.x+(this.xMovement*10.0);
-        let newPosy = this.curPos.y+(this.yMovement*10.0);
-        // console.log(screen.width);
-        // if(this.curPos.x>=-640 && this.curPos.x<=640-44){
 
+        if(this.isJumping && this.rb.linearVelocity.y>0){
+            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*0.5);
+            this.isJumping=false;
 
-        if(this.isMovingRight ||this.isMovingLeft){
-            this.node.setPosition(newPosx,newPosy,0);
         }
-
-        if(this.isMovingY||this.isGrounded()){
-            // if(this.doubleJump){
-                this.node.setPosition(newPosx,newPosy,0);
-            //     // console.log(this.doubleJump)
-            // }   
-            // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.rb.linearVelocity.y*0.5);
-            // console.log(this.rb.linearVelocity);
-        }
-        
     }
 
-    isGrounded():boolean{
-        return (this.curPos.y-this.phy.baseY)<1;
-    }
-    
-    cancelMovement(event:EventKeyboard){
-        switch(event.keyCode){
-            case KeyCode.ARROW_LEFT:
-            case KeyCode.KEY_A:
-                this.xMovement = 0;
-                this.isMovingLeft = false;
-                break;
-            case KeyCode.ARROW_RIGHT:
-            case KeyCode.KEY_D:
-                this.xMovement = 0;
-                this.isMovingRight = false;
-                break;
-                
-        }
-
+    flip(){
+        let scale = this.node.getScale();
+        this.node.setScale(scale.x*-1, scale.y,scale.z);
+        this.isFacingRight = !this.isFacingRight;
     }
 
-    inputMovement(event: EventKeyboard){    
-        switch(event.keyCode){
-            case KeyCode.ARROW_LEFT:
-            case KeyCode.KEY_A:
-                this.xMovement = -1;
-                this.isMovingLeft = true;
+    onCollision(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
       
-                break;
+        if(otherCollider.tag==2){               //Ground
+            
+        }
+        if(otherCollider.tag==0){               //Boss
+            console.log(otherCollider.name);
+        }
+
+    }
+
+    keyDown(event:EventKeyboard){
+        switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
-                this.xMovement = 1;
-                this.isMovingRight = true;
+                if(!this.isFacingRight){
+                    this.flip();
+                }
+                this.horizontal=1;
                 break;
-            case KeyCode.SPACE:
+                case KeyCode.ARROW_LEFT:
+                    case KeyCode.KEY_A:
+                    if(this.isFacingRight){
+                        this.flip();
+                    }
+                    this.horizontal=-1;
+                break;
+            case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
-                
-                // this.yMovement = 3;
-                this.isMovingY = true;
-              
+                this.isJumping = true;
                 break;
         }
     }
 
-    jump(){
-
+    keyUp(event:EventKeyboard){
+        switch(event.keyCode){
+            case KeyCode.ARROW_RIGHT:
+            case KeyCode.KEY_D:
+            case KeyCode.ARROW_LEFT:
+            case KeyCode.KEY_A:
+                this.horizontal=0;
+                break;
+        }
     }
+    
 }
 
 

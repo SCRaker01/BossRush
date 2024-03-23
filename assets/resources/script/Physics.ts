@@ -12,10 +12,6 @@ export class Physics extends Component {
     start() {
         this.baseY = this.ground.getPosition().y;
     }
-
-    update(deltaTime: number) {
-        
-    }
 }
 
 
