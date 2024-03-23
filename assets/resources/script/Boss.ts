@@ -31,12 +31,12 @@ export class Boss extends Component {
 
             if(playerPosX < bossPosX) {
                 this.horizontal = -0.5;
-                if(this.isFacingRight) this.flip();
+                if(!this.isFacingRight) this.flip();
                 // this.flip();
             }
             else if (playerPosX > bossPosX) {
                 this.horizontal = 0.5;
-                if(!this.isFacingRight) this.flip();
+                if(this.isFacingRight) this.flip();
                 // this.flip();
             }
 

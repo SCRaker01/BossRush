@@ -14,6 +14,7 @@ export class Player extends Component {
     private horizontal:number;
     private speed:number;
     private isJumping:boolean;
+    private isOnGround:boolean;
     private collider;
     private isFacingRight;
 
@@ -39,11 +40,14 @@ export class Player extends Component {
     update(deltaTime: number) {
         
         this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-        
-        if(this.isJumping && this.rb.linearVelocity.y>0){
+        // console.log(this.rb.linearVelocity.y);
+
+        if((this.isJumping && this.rb.linearVelocity.y>0)||(this.isJumping && this.isOnGround)){
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
             this.isJumping=false;
-        }
+            this.isOnGround=false;
+
+        }        
     }
 
     flip(){
@@ -55,11 +59,15 @@ export class Player extends Component {
     gotHit(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
       
         if(otherCollider.tag==2){               //Ground
+            this.isOnGround = true;
         }
         if(otherCollider.tag==0){               //Boss
-            // console.log(otherCollider.name);
             // this.knockback();
         }
+        if(otherCollider.tag==3){               //WALL
+            // this.knockback();
+        }
+        console.log(otherCollider.tag);
 
     }
 
@@ -81,7 +89,7 @@ export class Player extends Component {
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
-
+                console.log("up");
                 this.isJumping = true;
                 break;
         }
