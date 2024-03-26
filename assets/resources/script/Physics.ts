@@ -5,13 +5,10 @@ const { ccclass, property } = _decorator;
 export class Physics extends Component {
     @property({type: CCFloat}) gravity:number;
     @property({type: Node}) ground:Node;
-    @property({type: CCFloat})jumpForce:number;
+    
 
     public baseY :number;
-    
-    start() {
-        this.baseY = this.ground.getPosition().y;
-    }
+   
 }
 
 
