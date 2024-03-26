@@ -1,5 +1,8 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
-    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation } from 'cc';
+    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
+    PhysicsSystem2D,
+    v2,
+    PHYSICS_2D_PTM_RATIO} from 'cc';
 import { KeyCode } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -11,16 +14,21 @@ export class Player extends Component {
     private vy :number=0;
 
     private rb:RigidBody2D;
-    private circleC:CircleCollider2D;
+    private playerAnim:Animation;
+    private collider:Collider2D;
+    
+    private curClipName:string;
     private horizontal:number;
     private speed:number;
     private isJumping:boolean;
     private isOnGround:boolean;
-    private collider;
-    private isFacingRight;
-    private playerAnim:Animation;
-    private curClipName:string;
+    private isFacingRight:boolean;
     
+    private isRolling:boolean;
+    private canRolling:boolean;
+    private rollCD:number;
+    private tempSpeed:number;
+    private tempGrav:number;
 
    
     onLoad() {
@@ -31,9 +39,11 @@ export class Player extends Component {
         this.collider = this.node.getComponent(Collider2D); 
         
         this.rb = this.node.getComponent(RigidBody2D);
-        this.circleC = this.node.getComponent(CircleCollider2D);
         this.horizontal = 0;
         this.speed = 8;
+        this.rollCD = 1;
+
+        this.canRolling = true;
         
     }
 
@@ -42,40 +52,59 @@ export class Player extends Component {
         this.collider.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
         this.curClipName = this.playerAnim.defaultClip.toString();
         
+        PhysicsSystem2D.instance.gravity = v2(0, -25 * PHYSICS_2D_PTM_RATIO);
     }
 
     
 
     update(deltaTime: number) {
         
-        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-        // console.log(this.rb.linearVelocity.y);
-        if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
-            // this.scheduleOnce(()=>{
-            //     this.playerAnim.play("heroRun");
-            // })
-            this.playAnimation("heroRun");
-        } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
-            // this.scheduleOnce(()=>{
-            //     this.playerAnim.play("heroIdle");
-            // })
+        
+        if(!this.isRolling){
+            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
 
-            this.playAnimation("heroIdle");
+            if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
+  
+                this.playAnimation("heroRun");
+            } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
+    
+                this.playAnimation("heroIdle");
+                
+            }
+
+        } else {
+
+            if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
+                this.canRolling = false;
+                this.playAnimation("heroRoll");
+                
+                this.rb.linearVelocity = new Vec2(this.tempSpeed*2, this.rb.linearVelocity.y);
+                this.scheduleOnce(()=>{
+                 
+                    this.isRolling=false;
+                    this.tempSpeed = 0;
+                },0.68);
+
+            }
+
+            if(!this.isOnGround) {this.isRolling=false;}
+
+            this.scheduleOnce(()=>{this.canRolling = true;},this.rollCD);
         }
+        
+
+
 
         if((this.isJumping && this.rb.linearVelocity.y>0)||(this.isJumping && this.isOnGround)){
-            // this.scheduleOnce(()=>{
-            //     this.playerAnim.play("heroJump");
-            // })
+
             this.playAnimation("heroJump");
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
             this.isJumping=false;
             this.isOnGround=false;
+            this.isRolling=false;
         }
         else if (!this.isOnGround && this.rb.linearVelocity.y<0){
-            // this.scheduleOnce(()=>{
-            //     this.playerAnim.play("heroFall");
-            // })
+            
             this.playAnimation("heroFall");
         }
         console.log(this.rb.linearVelocity);
@@ -101,12 +130,14 @@ export class Player extends Component {
    
 
     }
+
+    
     attackHit(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
-      
-       
-
+        
+        
+        
     }
-
+    
     playAnimation(clipName:string){
         if(this.curClipName != clipName){
             this.playerAnim.play(clipName);
@@ -136,14 +167,13 @@ export class Player extends Component {
                 this.isJumping = true;
                 break;
             case KeyCode.SHIFT_LEFT:
-                    alert("shift");
-                    this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*5, this.rb.linearVelocity.y);
+                    // alert("shift");
+                    this.isRolling = true;
+                    this.tempSpeed = this.rb.linearVelocity.x;
+  
                 
                 break;
-            // case KeyCode.ARROW_DOWN:
-            // case KeyCode.KEY_S:
-            //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y-1);
-            //     break;
+
         }
     }
 
@@ -173,6 +203,9 @@ export class Player extends Component {
     }
 
     hit(){
+
+    }
+    dead(){
 
     }
     

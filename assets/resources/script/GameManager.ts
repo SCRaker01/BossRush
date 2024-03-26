@@ -18,7 +18,7 @@ export class GameManager extends Component {
         this.leftEdge = -this.mainGround.getPosition().x/2;
         this.rightEdge = this.mainGround.getComponent(UITransform).contentSize.x/2;
         this.size = this.mainGround.getComponent(UITransform).contentSize.x/2;
-        
+        PhysicsSystem2D.instance.gravity = v2(0, -20 * PHYSICS_2D_PTM_RATIO);
         
     }
     

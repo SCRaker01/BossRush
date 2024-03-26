@@ -1,5 +1,5 @@
 import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
-import { Physics } from './Physics';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('Boss')
