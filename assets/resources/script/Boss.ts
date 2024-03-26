@@ -1,4 +1,4 @@
-import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3, Animation } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -14,10 +14,18 @@ export class Boss extends Component {
     private isJumping:boolean;
     private collider;
     private isFacingRight;
+    private bossAnim:Animation;
+    private curClipName:string;
 
-    start() {
+    onLoad(){
         this.rb = this.node.getComponent(RigidBody2D);
         this.circleC = this.node.getComponent(CircleCollider2D);
+        this.bossAnim = this.node.getComponent(Animation);
+        this.curClipName = this.bossAnim.defaultClip.toString();
+
+    }
+
+    start() {
         this.horizontal = 0;
         this.speed = 4;
     }
@@ -28,7 +36,7 @@ export class Boss extends Component {
 
         if (Math.abs(bossPosX - playerPosX)
                 > (this.node.getComponent(UITransform).contentSize.x/2)-1){
-
+            
             if(playerPosX < bossPosX) {
                 this.horizontal = -0.5;
                 if(!this.isFacingRight) this.flip();
@@ -39,12 +47,21 @@ export class Boss extends Component {
                 if(this.isFacingRight) this.flip();
                 // this.flip();
             }
+            this.playAnimation("skellWalk");
 
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
             // console.log(Math.abs(bossPosX - playerPosX));
+        }else {
+            this.playAnimation("skellIdle");
         }
         
 
+    }
+    playAnimation(clipName:string){
+        if(this.curClipName != clipName){
+            this.bossAnim.play(clipName);
+            this.curClipName = clipName;
+        }
     }
 
     knockback(){
