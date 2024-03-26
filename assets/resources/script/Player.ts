@@ -29,7 +29,7 @@ export class Player extends Component {
     private rollCD:number;
     private tempSpeed:number;
     private tempGrav:number;
-
+    private isWallSliding:boolean;
    
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
@@ -41,9 +41,10 @@ export class Player extends Component {
         this.rb = this.node.getComponent(RigidBody2D);
         this.horizontal = 0;
         this.speed = 8;
-        this.rollCD = 1;
+        this.rollCD = 2;
 
         this.canRolling = true;
+        this.isWallSliding= false;
         
     }
 
@@ -59,13 +60,21 @@ export class Player extends Component {
 
     update(deltaTime: number) {
         
-        
+        //KONDISI TIDAK/ROLLING
+        // if(this.isWallSliding){
+        //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y*0.7);
+        //     // this.scheduleOnce(()=>{return;},0.5);
+        //     return;
+            
+        // } 
         if(!this.isRolling){
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
 
+            //BERLARI
             if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
   
                 this.playAnimation("heroRun");
+            //DIAM
             } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
     
                 this.playAnimation("heroIdle");
@@ -73,7 +82,7 @@ export class Player extends Component {
             }
 
         } else {
-
+            //ROLLING
             if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
                 this.canRolling = false;
                 this.playAnimation("heroRoll");
@@ -87,14 +96,13 @@ export class Player extends Component {
 
             }
 
-            if(!this.isOnGround) {this.isRolling=false;}
+            if(!this.isOnGround) this.isRolling=false;
 
+            //TIMER UNTUK BISA ROLL LAGI
             this.scheduleOnce(()=>{this.canRolling = true;},this.rollCD);
         }
         
-
-
-
+        //Lompat
         if((this.isJumping && this.rb.linearVelocity.y>0)||(this.isJumping && this.isOnGround)){
 
             this.playAnimation("heroJump");
@@ -103,6 +111,7 @@ export class Player extends Component {
             this.isOnGround=false;
             this.isRolling=false;
         }
+        //Terjun setelah lompat
         else if (!this.isOnGround && this.rb.linearVelocity.y<0){
             
             this.playAnimation("heroFall");
@@ -110,34 +119,40 @@ export class Player extends Component {
         console.log(this.rb.linearVelocity);
     }
 
+    //METHOD untuk mengubah arah player
     flip(){
         let scale = this.node.getScale();
         this.node.setScale(scale.x*-1, scale.y,scale.z);
         this.isFacingRight = !this.isFacingRight;
     }
 
+    //Method interaksi dengan entity lainnya
     onTouch(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
       
         if(otherCollider.tag==2){               //Ground
             this.isOnGround = true;
+            this.isWallSliding=false;
         }
         if(otherCollider.tag==0){               //Boss
             // this.knockback();
+            this.playAnimation("heroHurt");
+            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*-2, this.rb.linearVelocity.y);
+
+            // this.scheduleOnce(()=>{return;},0.25);
         }
-        if(otherCollider.tag==3){               //WALL
-            // this.knockback();
+        if(otherCollider.tag==3){
+            // this.playAnimation("heroWallSlide");
+            // this.isWallSliding=true;
         }
-   
 
     }
 
-    
+    //METHOD untuk hit box serangan
     attackHit(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
         
-        
-        
+     
     }
-    
+    //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){
         if(this.curClipName != clipName){
             this.playerAnim.play(clipName);
@@ -145,38 +160,60 @@ export class Player extends Component {
         }
     }
 
+    //Method untuk ketika mem-push keycaps 
     keyDown(event:EventKeyboard){
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
-                if(this.isFacingRight){
+                if(this.isFacingRight && !this.isWallSliding){
                     this.flip();
                 }
                 this.horizontal=1;
+                // if(this.isWallSliding){
+                //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+                //     this.isWallSliding=false;
+                // }
+                this.wallJump(1);
+
                 break;
             case KeyCode.ARROW_LEFT:
             case KeyCode.KEY_A:
-                if(!this.isFacingRight){
+                if(!this.isFacingRight && !this.isWallSliding){
                     this.flip();
                 }
                 this.horizontal=-1;
+                // if(this.isWallSliding){
+                //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+                //     this.isWallSliding=false;
+                // }
+                this.wallJump(1);
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
                 console.log("up");
                 this.isJumping = true;
+                this.wallJump(1.5);
                 break;
             case KeyCode.SHIFT_LEFT:
                     // alert("shift");
-                    this.isRolling = true;
-                    this.tempSpeed = this.rb.linearVelocity.x;
-  
-                
+                    if(this.canRolling){
+
+                        this.isRolling = true;
+                        this.tempSpeed = this.rb.linearVelocity.x;
+                    }
+
                 break;
 
         }
     }
+    wallJump(wallJumpPower:number){
+        if(this.isWallSliding){
+            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*wallJumpPower);
+            this.isWallSliding=false;
+        }
+    }
 
+    //Method untuk ketika melepas keycaps 
     keyUp(event:EventKeyboard){
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
@@ -187,6 +224,7 @@ export class Player extends Component {
                 break;
         }
     }
+
     keyPress(event:EventKeyboard){
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
