@@ -138,7 +138,7 @@ export class Player extends Component {
     flip(){
         let scale = this.node.getScale();
         this.node.setScale(scale.x*-1, scale.y,scale.z);
-        this.attackHitBox.offset = new Vec2(this.attackHitBox.offset.x*-1, 0);
+        // this.attackHitBox.offset = new Vec2(this.attackHitBox.offset.x*-1, 0);
         this.isFacingRight = !this.isFacingRight;
     }
 
@@ -180,25 +180,39 @@ export class Player extends Component {
      
     }
     //Harus di set untuk posisi hurtBox
+    private ctHB = 0;
+    private tempHori =1;
     createHurtBox(){
         let hurtBox = instantiate(this.hurtBox);
+        // this.hurtBox.name = this.hurtBox.name+this.
+        this.ctHB+=1;
         
         let tempHor = this.horizontal;
-        // hurtBox.setPosition((this.node.getPosition().x)+40*this.horizontal,this.node.getPosition().y,0);
-        hurtBox.getComponent(CircleCollider2D).offset = new Vec2(120*tempHor,this.node.position.y);
+        // hurtBox.getComponent(CircleCollider2D).offset = new Vec2(120*tempHor,this.node.position.y);
         console.log(hurtBox.getComponent(CircleCollider2D).offset);
         hurtBox.setParent(this.node);
+        
+
+        for(let i =0; i <this.ctHB;i++){
+            let tempNode = this.node.getChildByName("HurtBox");
+             tempNode.setPosition(120*tempHor,0,0);
+        }
+        
         
         // this.node.getChildByName("HurtBox").getComponent(CircleCollider2D).offset = new Vec2(this.node.getPosition().x+40*this.horizontal,this.node.position.y);
         
 
-        this.scheduleOnce(()=>{this.deleteHurtBox();},this.attackCD*3/4);
+        // this.scheduleOnce(()=>{this.deleteHurtBox();},this.attackCD*3/4);
     }
 
+    //Nanti bisa bikin script buat HurtBox terus detect ketika dia hit boss, langsung delete, bisa lebih cepet (ga perlu .75s tpi bisa 1 atau 2 frame)
     deleteHurtBox(){
         let hurtBox = this.node.getChildByName("HurtBox");
         // console.log(hurtBox);
-        if(hurtBox!=null) this.node.removeChild(hurtBox);
+        if(hurtBox!=null) {
+            this.node.removeChild(hurtBox);
+            this.ctHB-=1;
+        }
     }
 
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
