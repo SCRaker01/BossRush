@@ -222,7 +222,7 @@
       "x": 0,
       "y": 0
     },
-    "_radius": 58,
+    "_radius": 44,
     "_id": ""
   },
   {
@@ -310,12 +310,12 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 40,
+      "x": 70,
       "y": 0
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 88,
+      "width": 40,
       "height": 80
     },
     "_id": ""

@@ -1,7 +1,8 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
-    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
+    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, find,
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt} from 'cc';
 import { KeyCode } from 'cc';
+import { Boss } from './Boss';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -32,6 +33,8 @@ export class Player extends Component {
     private tempSpeed:number;
     private tempGrav:number;
     private isWallSliding:boolean;
+
+    private canDoubleJump:boolean;
    
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
@@ -49,12 +52,12 @@ export class Player extends Component {
 
         this.canRolling = true;
         this.canAttack = true;
+        this.canDoubleJump= false;
         this.isWallSliding= false;
     }
 
     start(){
         this.collider.on(Contact2DType.BEGIN_CONTACT,this.onTouch,this);
-        this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
         
         this.curClipName = this.playerAnim.defaultClip.toString();
         
@@ -71,6 +74,8 @@ export class Player extends Component {
         //     return;
             
         // } 
+       
+        
         if(!this.isRolling){
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
 
@@ -107,14 +112,7 @@ export class Player extends Component {
         }
         
         //Lompat
-        if((this.isJumping && this.rb.linearVelocity.y>0)||(this.isJumping && this.isOnGround)){
-
-            this.playAnimation("heroJump");
-            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
-            this.isJumping=false;
-            this.isOnGround=false;
-            this.isRolling=false;
-        }
+        //Disatukan dengan input "lompat" ,tidak ditaruh di dalam update(); sebagai solusi untuk isu double jump
 
         //Terjun setelah lompat
         if (!this.isOnGround && this.rb.linearVelocity.y<0){
@@ -123,6 +121,16 @@ export class Player extends Component {
         }
         // console.log(this.rb.linearVelocity);
     }
+
+    jump(){
+        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
+        this.isJumping=false;
+        this.isOnGround=false;
+        this.isRolling=false;
+        // this.canDoubleJump=true;
+    }
+
+    
 
     //METHOD untuk mengubah arah player
     flip(){
@@ -137,6 +145,7 @@ export class Player extends Component {
       
         if(otherCollider.tag==2){               //Ground
             this.isOnGround = true;
+            this.canDoubleJump=false;
             this.isWallSliding=false;
         }
         if(otherCollider.tag==0){               //Boss
@@ -156,9 +165,16 @@ export class Player extends Component {
     //METHOD untuk hit box serangan
     attackHit(selfCollider: BoxCollider2D, otherCollider: CircleCollider2D, contact : IPhysics2DContact|null){
         if (otherCollider.tag==0){
+            
+            // contact.disabledOnce = true;
             console.log(otherCollider.name);
             // alert("hit");
+            console.log(contact.colliderA.node);
+            console.log(contact.colliderB.node);
+            // let bossNode:Boss = find("Boss").getComponent(Boss);
+            // console.log(bossNode);
         }
+        
      
     }
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
@@ -182,7 +198,7 @@ export class Player extends Component {
                 //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
                 //     this.isWallSliding=false;
                 // }
-                this.wallJump(1);
+                // this.wallJump(1);
                
 
                 break;
@@ -196,15 +212,23 @@ export class Player extends Component {
                 //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
                 //     this.isWallSliding=false;
                 // }
-                this.wallJump(1);
+                // this.wallJump(1);
                 
 
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
-           
+
+                if((this.isJumping && this.isOnGround) || this.canDoubleJump){
+
+                    this.playAnimation("heroJump");
+                    this.jump();
+                    this.canDoubleJump = !this.canDoubleJump;
+                    
+                }
                 this.isJumping = true;
-                this.wallJump(1.5);
+                // this.wallJump(1.5);
+                
                 break;
             case KeyCode.SHIFT_LEFT:
                     // alert("shift");
@@ -260,9 +284,9 @@ export class Player extends Component {
     }
 
     attack(){
-        
+        this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
         this.attackHitBox.node.active = true;
-        let rnd :number = randomRangeInt(0,2);
+        let rnd :number = randomRangeInt(0,3);
 
         
 
@@ -287,7 +311,7 @@ export class Player extends Component {
             if(Math.abs(this.rb.linearVelocity.x)==0)this.playerAnim.play("heroIdle");
             else this.playerAnim.play("heroRun");
             // this.attackHitBox.off;
-            this.attackHitBox.node.active = false;
+            this.attackHitBox.off;
 
             this.canAttack = true;
            

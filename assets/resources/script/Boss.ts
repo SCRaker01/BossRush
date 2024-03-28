@@ -5,14 +5,12 @@ const { ccclass, property } = _decorator;
 @ccclass('Boss')
 export class Boss extends Component {
 
-    @property({type:Node}) private player:Node;
+    /*@property({type:Node})*/ private player:Node;
 
     private rb:RigidBody2D;
     private circleC:CircleCollider2D;
     private horizontal:number;
     private speed:number;
-    private isJumping:boolean;
-    private collider;
     private isFacingRight;
     private bossAnim:Animation;
     private curClipName:string;
@@ -21,8 +19,9 @@ export class Boss extends Component {
         this.rb = this.node.getComponent(RigidBody2D);
         this.circleC = this.node.getComponent(CircleCollider2D);
         this.bossAnim = this.node.getComponent(Animation);
-        this.curClipName = this.bossAnim.defaultClip.toString();
-
+        // this.curClipName = this.bossAnim.defaultClip.toString();
+        let parentNode = this.node.getParent();
+        this.player = parentNode.getChildByName("Player");
     }
 
     start() {
@@ -34,6 +33,7 @@ export class Boss extends Component {
         let playerPosX = this.player.getPosition().x;
         let bossPosX = this.node.getPosition().x;
         console.log(this.circleC.tag)
+        
         if (Math.abs(bossPosX - playerPosX)
                 > (this.node.getComponent(UITransform).contentSize.x/2)-1){
             
