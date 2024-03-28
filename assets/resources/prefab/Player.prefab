@@ -159,6 +159,10 @@
     "__prefab": {
       "__id__": 7
     },
+    "hurtBox": {
+      "__uuid__": "d979ce1e-013f-4764-83e5-3a8349c6ac48",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": ""
   },
   {

@@ -1,14 +1,16 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, find,
-    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt} from 'cc';
+    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt,
+    Prefab,
+    instantiate} from 'cc';
 import { KeyCode } from 'cc';
-import { Boss } from './Boss';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
 export class Player extends Component {
     
     @property({type: CCFloat}) private jumpForce:number;
+    @property({type:Prefab}) private hurtBox:Prefab;
     
     private vy :number=0;
 
@@ -177,6 +179,28 @@ export class Player extends Component {
         
      
     }
+    //Harus di set untuk posisi hurtBox
+    createHurtBox(){
+        let hurtBox = instantiate(this.hurtBox);
+        
+        let tempHor = this.horizontal;
+        // hurtBox.setPosition((this.node.getPosition().x)+40*this.horizontal,this.node.getPosition().y,0);
+        hurtBox.getComponent(CircleCollider2D).offset = new Vec2(120*tempHor,this.node.position.y);
+        console.log(hurtBox.getComponent(CircleCollider2D).offset);
+        hurtBox.setParent(this.node);
+        
+        // this.node.getChildByName("HurtBox").getComponent(CircleCollider2D).offset = new Vec2(this.node.getPosition().x+40*this.horizontal,this.node.position.y);
+        
+
+        this.scheduleOnce(()=>{this.deleteHurtBox();},this.attackCD*3/4);
+    }
+
+    deleteHurtBox(){
+        let hurtBox = this.node.getChildByName("HurtBox");
+        // console.log(hurtBox);
+        if(hurtBox!=null) this.node.removeChild(hurtBox);
+    }
+
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){
         if(this.curClipName != clipName){
@@ -242,7 +266,7 @@ export class Player extends Component {
             case KeyCode.KEY_J:
                 if(this.canAttack){
                     this.attack();
-
+                  
                 }
 
         }
@@ -284,10 +308,10 @@ export class Player extends Component {
     }
 
     attack(){
-        this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
-        this.attackHitBox.node.active = true;
+        // this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
+        // this.attackHitBox.node.active = true;
         let rnd :number = randomRangeInt(0,3);
-
+        this.createHurtBox();
         
 
         // console.log(this.attackHitBox.offset);
@@ -314,7 +338,7 @@ export class Player extends Component {
             this.attackHitBox.off;
 
             this.canAttack = true;
-           
+            
         },this.attackCD);
         
     }
