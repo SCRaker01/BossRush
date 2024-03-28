@@ -33,7 +33,7 @@ export class Boss extends Component {
     update(deltaTime: number) {
         let playerPosX = this.player.getPosition().x;
         let bossPosX = this.node.getPosition().x;
-
+        console.log(this.circleC.tag)
         if (Math.abs(bossPosX - playerPosX)
                 > (this.node.getComponent(UITransform).contentSize.x/2)-1){
             
@@ -64,8 +64,12 @@ export class Boss extends Component {
         }
     }
 
+    receiveAttackFromPlayer(){
+
+    }
+
     knockback(){
-        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*0.5, this.rb.linearVelocity.y*0.5);
+        // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*0.5, this.rb.linearVelocity.y*0.5);
     }
 
     flip(){
