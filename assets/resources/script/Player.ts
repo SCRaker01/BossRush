@@ -1,9 +1,11 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
-    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, find,
+    Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt,
-    Prefab,
-    instantiate} from 'cc';
+    Prefab,geometry,physics, PhysicsSystem,
+    ERaycast2DType,
+    Graphics} from 'cc';
 import { KeyCode } from 'cc';
+import { Boss } from './Boss';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -37,6 +39,8 @@ export class Player extends Component {
     private isWallSliding:boolean;
 
     private canDoubleJump:boolean;
+    private phySys:PhysicsSystem;
+
    
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
@@ -56,6 +60,9 @@ export class Player extends Component {
         this.canAttack = true;
         this.canDoubleJump= false;
         this.isWallSliding= false;
+        // PhysicsSystem.instance.enable = true;
+        // this.phySys = PhysicsSystem.instance;
+
     }
 
     start(){
@@ -77,7 +84,7 @@ export class Player extends Component {
             
         // } 
        
-        
+        // console.log(this.phySys);
         if(!this.isRolling){
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
 
@@ -169,7 +176,7 @@ export class Player extends Component {
         if (otherCollider.tag==0){
             
             // contact.disabledOnce = true;
-            console.log(otherCollider.name);
+            // console.log(otherCollider.name);
             // alert("hit");
             console.log(contact.colliderA.node);
             console.log(contact.colliderB.node);
@@ -180,40 +187,7 @@ export class Player extends Component {
      
     }
     //Harus di set untuk posisi hurtBox
-    private ctHB = 0;
-    private tempHori =1;
-    createHurtBox(){
-        let hurtBox = instantiate(this.hurtBox);
-        // this.hurtBox.name = this.hurtBox.name+this.
-        this.ctHB+=1;
-        
-        let tempHor = this.horizontal;
-        // hurtBox.getComponent(CircleCollider2D).offset = new Vec2(120*tempHor,this.node.position.y);
-        console.log(hurtBox.getComponent(CircleCollider2D).offset);
-        hurtBox.setParent(this.node);
-        
-
-        for(let i =0; i <this.ctHB;i++){
-            let tempNode = this.node.getChildByName("HurtBox");
-             tempNode.setPosition(120*tempHor,0,0);
-        }
-        
-        
-        // this.node.getChildByName("HurtBox").getComponent(CircleCollider2D).offset = new Vec2(this.node.getPosition().x+40*this.horizontal,this.node.position.y);
-        
-
-        // this.scheduleOnce(()=>{this.deleteHurtBox();},this.attackCD*3/4);
-    }
-
-    //Nanti bisa bikin script buat HurtBox terus detect ketika dia hit boss, langsung delete, bisa lebih cepet (ga perlu .75s tpi bisa 1 atau 2 frame)
-    deleteHurtBox(){
-        let hurtBox = this.node.getChildByName("HurtBox");
-        // console.log(hurtBox);
-        if(hurtBox!=null) {
-            this.node.removeChild(hurtBox);
-            this.ctHB-=1;
-        }
-    }
+  
 
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){
@@ -324,17 +298,48 @@ export class Player extends Component {
     attack(){
         // this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
         // this.attackHitBox.node.active = true;
-        let rnd :number = randomRangeInt(0,3);
-        this.createHurtBox();
+        let ctx:Graphics = null;
+        // this.createHurtBox();
+        let pos = this.node.getPosition();
+        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
+        let p2 = new Vec2(this.node.worldPosition.x+100, this.node.worldPosition.y);
+        let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
+        let mask = 0xffffffff;
+        let maxDistance = 10000000;
+        let queryTrigger = true;
+
+        // console.log(worldRay);
+
+        // let bRes = PhysicsSystem.instance.raycastClosest(worldRay,mask,maxDistance,queryTrigger);
+        let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+        // console.log(results);
+        console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
+        // console.log(pos.x+" "+pos.y);
+        let enemy = results[0].collider;
+        if(enemy.tag ==0) {
+            // console.log(enemy.)
+            results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.isFacingRight);
+        }
+        // console.log(results[0].collider.name);        
+        // if(bRes) {
+        //     let rayResult = PhysicsSystem.instance.raycastClosestResult;
+        //     // for(let i = 0;i<rayResult.length;i++){
+        //         // let result = rayResult[i];
+        //     let collider = rayResult.collider;
+        //     let distance = rayResult.distance;
+        //     let hitPoint = rayResult.hitPoint;
+        //     let hitNormal = rayResult.hitNormal;
+        //     console.log(collider+" "+distance+" "+hitPoint+" "+hitNormal);
+        //     // }
+        // }
         
 
-        // console.log(this.attackHitBox.offset);
+        
         this.attackHitBox.sensor = true;
         this.canAttack = false;
 
-        // console.log(this.collider.tag+" "+this.collider.radius);
-        // console.log(this.attackHitBox.tag+" "+this.attackHitBox.size);
-
+        let rnd :number = randomRangeInt(0,3);
+       
         if(rnd==0){
             this.playerAnim.play("heroAttack1");
         } else if(rnd==1){
