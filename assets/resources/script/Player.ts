@@ -12,6 +12,7 @@ const { ccclass, property } = _decorator;
 export class Player extends Component {
     
     @property({type: CCFloat}) private jumpForce:number;
+    @property({type: CCFloat}) private playerDamage:number;
     @property({type:Prefab}) private hurtBox:Prefab;
     
     private vy :number=0;
@@ -40,6 +41,9 @@ export class Player extends Component {
 
     private canDoubleJump:boolean;
     private phySys:PhysicsSystem;
+    private directionVal:number;
+
+    
 
    
     onLoad() {
@@ -55,6 +59,7 @@ export class Player extends Component {
         this.speed = 8;
         this.rollCD = 2;
         this.attackCD = 0.5;        //Berdasarkan lama animasi attack
+        this.directionVal = 1;       //Kanan = 1 , Kiri = -1, jadi val buat simpenan arah 
 
         this.canRolling = true;
         this.canAttack = true;
@@ -145,8 +150,9 @@ export class Player extends Component {
     flip(){
         let scale = this.node.getScale();
         this.node.setScale(scale.x*-1, scale.y,scale.z);
-        // this.attackHitBox.offset = new Vec2(this.attackHitBox.offset.x*-1, 0);
+        
         this.isFacingRight = !this.isFacingRight;
+        this.directionVal*=-1;
     }
 
     //Method interaksi dengan entity lainnya
@@ -302,38 +308,26 @@ export class Player extends Component {
         // this.createHurtBox();
         let pos = this.node.getPosition();
         let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+100, this.node.worldPosition.y);
-        let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
+        let p2 = new Vec2(this.node.worldPosition.x+(500*this.directionVal), this.node.worldPosition.y);
+        // let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
         let mask = 0xffffffff;
-        let maxDistance = 10000000;
-        let queryTrigger = true;
+        // let maxDistance = 10000000;
+        // let queryTrigger = true;
 
         // console.log(worldRay);
 
         // let bRes = PhysicsSystem.instance.raycastClosest(worldRay,mask,maxDistance,queryTrigger);
         let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
         // console.log(results);
-        console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
+        // console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
         // console.log(pos.x+" "+pos.y);
-        let enemy = results[0].collider;
-        if(enemy.tag ==0) {
-            // console.log(enemy.)
-            results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.isFacingRight);
-        }
-        // console.log(results[0].collider.name);        
-        // if(bRes) {
-        //     let rayResult = PhysicsSystem.instance.raycastClosestResult;
-        //     // for(let i = 0;i<rayResult.length;i++){
-        //         // let result = rayResult[i];
-        //     let collider = rayResult.collider;
-        //     let distance = rayResult.distance;
-        //     let hitPoint = rayResult.hitPoint;
-        //     let hitNormal = rayResult.hitNormal;
-        //     console.log(collider+" "+distance+" "+hitPoint+" "+hitNormal);
-        //     // }
-        // }
+        let enemy = results[0];
+        console.log(enemy.collider.tag);
         
-
+        if(enemy.collider.tag ==0) {
+            enemy.collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+        }
+    
         
         this.attackHitBox.sensor = true;
         this.canAttack = false;
@@ -353,13 +347,27 @@ export class Player extends Component {
         this.scheduleOnce(()=>{
             if(Math.abs(this.rb.linearVelocity.x)==0)this.playerAnim.play("heroIdle");
             else this.playerAnim.play("heroRun");
-            // this.attackHitBox.off;
-            this.attackHitBox.off;
+
 
             this.canAttack = true;
             
         },this.attackCD);
         
+    }
+
+    receiveAttackFromBoss(damage:number){
+        // this.isHit=true;
+        // this.bossHealth-=damage;
+        // // console.log(this.bossHealth);
+
+        // this.playAnimation("skellHurt");
+
+        // if (this.isDead()) {    
+        //     this.dead();
+        // }
+        
+        // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
+        // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
     }
     dead(){
 
