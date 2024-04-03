@@ -25,6 +25,8 @@ export class Boss extends Component {
     private attackCD:number;
 
     private directionVal:number;
+    private deadStat:boolean;
+    private isAttacking:boolean;
 
 
     onLoad(){
@@ -39,7 +41,9 @@ export class Boss extends Component {
 
         this.directionVal = -1;
         this.canAttack= true;
-        this.attackCD = 2;
+        this.attackCD = 3;
+        this.deadStat = false;
+        this.isAttacking = false;
     }
 
     start() {
@@ -56,30 +60,36 @@ export class Boss extends Component {
         //     this.isHit=false;
         //     return;
         // },this.stunDur);
+        if(!this.deadStat){
+            if (Math.abs(bossPosX - playerPosX)+33
+                    > (this.node.getComponent(UITransform).contentSize.x)-1){
         
-        if (Math.abs(bossPosX - playerPosX)
-                > (this.node.getComponent(UITransform).contentSize.x/2)-1){
+                this.playAnimation("skellWalk");
+                if(playerPosX < bossPosX) {
+                    this.horizontal = -0.5;
+                    if(!this.isFacingRight) this.flip();
+                    
+                }
+                else if (playerPosX > bossPosX) {
+                    this.horizontal = 0.5;
+                    if(this.isFacingRight) this.flip();
+                   
+                }
     
-            this.playAnimation("skellWalk");
-            if(playerPosX < bossPosX) {
-                this.horizontal = -0.5;
-                if(!this.isFacingRight) this.flip();
                 
+                this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+                // console.log(Math.abs(bossPosX - playerPosX));
+            }else { 
+                if(!this.isAttacking){
+                    this.playAnimation("skellIdle");
+                }
+                if(this.canAttack){
+                    this.attack();
+                }
             }
-            else if (playerPosX > bossPosX) {
-                this.horizontal = 0.5;
-                if(this.isFacingRight) this.flip();
-               
-            }
-
             
-            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-            // console.log(Math.abs(bossPosX - playerPosX));
-        }else { 
-            this.playAnimation("skellIdle");
-            // if(this.canAttack)this.attack();
+
         }
-        
 
     }
     playAnimation(clipName:string){
@@ -105,7 +115,11 @@ export class Boss extends Component {
     }
 
     isDead():boolean{
-        if(this.bossHealth<=0) return true;
+        // console.log(this.bossHealth);
+        if(this.bossHealth<=0) {
+            this.deadStat=true;
+            return true;
+        }
         else return false;
     }
 
@@ -119,36 +133,46 @@ export class Boss extends Component {
     }
 
     attack(){
-   
-        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+(250*this.directionVal), this.node.worldPosition.y);
-        let mask = 0xffffffff;
+        this.isAttacking =true;
+        // let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
+        // let p2 = new Vec2(this.node.worldPosition.x+(250*this.directionVal), this.node.worldPosition.y);
+        // let mask = 0xffffffff;
  
-        let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+        // let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
       
-        console.log(results);
-        // let enemy = results[0].collider;
-        // console.log(enemy.tag);
-        // console.log(results[0].collider.name+" "+results[0].collider.tag);
+        // console.log(results);
+        // // let enemy = results[0].collider;
+        // // console.log(enemy.tag);
+        // // console.log(results[0].collider.name+" "+results[0].collider.tag);
 
-        // if(results[0].collider.tag ==1) {
-        //     results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+        // if(results){
+
+        //     if(results[0]!=null && results[0].collider.tag ==0) {
+        //         results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+        //     }
         // }
-    
+        let rnd :number = randomRangeInt(0,1);
+        if(rnd == 0){
+            this.playAnimation("skellAttack1");
+        } else{
+            this.playAnimation("skellAttack2");
+
+        }
   
         this.canAttack = false;
 
-      
-        this.playAnimation("skellAttack");
+        let animTimer:number = 1.1;
+        this.scheduleOnce(()=>{
+            this.isAttacking = false;
+
+        },animTimer);
         
         
         this.scheduleOnce(()=>{
-            // if(Math.abs(this.rb.linearVelocity.x)==0)this.bossAnim.play("skellIdle");
-            // else this.bossAnim.play("skellWalk");
-
+     
             this.canAttack = true;
             
-        },this.attackCD);
+        },this.attackCD-animTimer);
         
     }
 

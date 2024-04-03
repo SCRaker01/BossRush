@@ -307,8 +307,8 @@ export class Player extends Component {
         let ctx:Graphics = null;
         // this.createHurtBox();
         let pos = this.node.getPosition();
-        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+(500*this.directionVal), this.node.worldPosition.y);
+        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+33);
+        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);
         // let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
         let mask = 0xffffffff;
         // let maxDistance = 10000000;
@@ -321,18 +321,20 @@ export class Player extends Component {
         // console.log(results);
         // console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
         // console.log(pos.x+" "+pos.y);
-        let enemy = results[0];
-        console.log(enemy.collider.tag);
-        
-        if(enemy.collider.tag ==0) {
-            enemy.collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+        // console.log(enemy.collider.tag);
+        if(results){
+            
+            if(results[0] != null && results[0].collider.tag ==0) {
+                results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+            }
+
         }
     
         
-        this.attackHitBox.sensor = true;
+        // this.attackHitBox.sensor = true;
         this.canAttack = false;
 
-        let rnd :number = randomRangeInt(0,3);
+        let rnd :number = randomRangeInt(0,2);
        
         if(rnd==0){
             this.playerAnim.play("heroAttack1");
@@ -356,6 +358,7 @@ export class Player extends Component {
     }
 
     receiveAttackFromBoss(damage:number){
+        console.log(damage);
         // this.isHit=true;
         // this.bossHealth-=damage;
         // // console.log(this.bossHealth);
@@ -369,6 +372,7 @@ export class Player extends Component {
         // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
         // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
     }
+
     dead(){
 
     }
