@@ -132,25 +132,25 @@ export class Boss extends Component {
         // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*0.5, this.rb.linearVelocity.y*0.5);
     }
 
+    //Harus dibenerin
     attack(){
         this.isAttacking =true;
-        // let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-        // let p2 = new Vec2(this.node.worldPosition.x+(250*this.directionVal), this.node.worldPosition.y);
-        // let mask = 0xffffffff;
+        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+16);
+        let p2 = new Vec2(this.node.worldPosition.x+(250*this.directionVal), this.node.worldPosition.y+16);
+        let mask = 0xffffffff;
  
-        // let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+        let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
       
-        // console.log(results);
+        console.log(p2.x+" "+p2.y);
         // // let enemy = results[0].collider;
         // // console.log(enemy.tag);
         // // console.log(results[0].collider.name+" "+results[0].collider.tag);
-
-        // if(results){
-
-        //     if(results[0]!=null && results[0].collider.tag ==0) {
-        //         results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
-        //     }
-        // }
+        console.log(results);
+        if(results){
+            if(results[0]!=null && results[0].collider.tag ==0) {
+                results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+            }
+        }
         let rnd :number = randomRangeInt(0,1);
         if(rnd == 0){
             this.playAnimation("skellAttack1");

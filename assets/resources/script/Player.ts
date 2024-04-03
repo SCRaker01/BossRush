@@ -13,6 +13,7 @@ export class Player extends Component {
     
     @property({type: CCFloat}) private jumpForce:number;
     @property({type: CCFloat}) private playerDamage:number;
+    @property({type: CCFloat}) private playerHealth:number;
     @property({type:Prefab}) private hurtBox:Prefab;
     
     private vy :number=0;
@@ -43,7 +44,7 @@ export class Player extends Component {
     private phySys:PhysicsSystem;
     private directionVal:number;
 
-    
+    private deadStat:boolean;
 
    
     onLoad() {
@@ -65,6 +66,7 @@ export class Player extends Component {
         this.canAttack = true;
         this.canDoubleJump= false;
         this.isWallSliding= false;
+        this.deadStat = false;
         // PhysicsSystem.instance.enable = true;
         // this.phySys = PhysicsSystem.instance;
 
@@ -310,6 +312,8 @@ export class Player extends Component {
         let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+33);
         let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);
         // let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
+        console.log(p1.x+" "+p1.y);
+
         let mask = 0xffffffff;
         // let maxDistance = 10000000;
         // let queryTrigger = true;
@@ -322,6 +326,7 @@ export class Player extends Component {
         // console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
         // console.log(pos.x+" "+pos.y);
         // console.log(enemy.collider.tag);
+        // console.log(results);
         if(results){
             
             if(results[0] != null && results[0].collider.tag ==0) {
@@ -331,7 +336,7 @@ export class Player extends Component {
         }
     
         
-        // this.attackHitBox.sensor = true;
+    
         this.canAttack = false;
 
         let rnd :number = randomRangeInt(0,2);
@@ -360,19 +365,27 @@ export class Player extends Component {
     receiveAttackFromBoss(damage:number){
         console.log(damage);
         // this.isHit=true;
-        // this.bossHealth-=damage;
-        // // console.log(this.bossHealth);
+        this.playerHealth-=damage;
+        console.log(this.playerHealth);
 
-        // this.playAnimation("skellHurt");
+        this.playAnimation("heroHurt");
 
-        // if (this.isDead()) {    
-        //     this.dead();
-        // }
+        if (this.isDead()) {    
+            this.dead();
+        }
         
         // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
         // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
     }
+    isDead():boolean {
+        if(this.playerHealth<=0) {
+            this.deadStat=true;
+            return true;
+        }
+        else return false;
+    }
 
+    //----------------------------------------------------------------
     dead(){
 
     }

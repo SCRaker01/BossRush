@@ -122,7 +122,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "0ca2ea05-81cf-4d95-8b33-cf63ca785c2d@f9941",
+      "__uuid__": "2235ff97-c28b-423e-b13b-1ffed31b1b4f@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -157,6 +157,7 @@
       "__id__": 7
     },
     "playerDamage": 50,
+    "playerHealth": 1000,
     "hurtBox": {
       "__uuid__": "d979ce1e-013f-4764-83e5-3a8349c6ac48",
       "__expectedType__": "cc.Prefab"
@@ -279,6 +280,10 @@
       },
       {
         "__uuid__": "edbd22f4-7e55-466f-aaa2-b1068879b693",
+        "__expectedType__": "cc.AnimationClip"
+      },
+      {
+        "__uuid__": "bbf407f5-8f7b-4111-bdaa-07be783fb23c",
         "__expectedType__": "cc.AnimationClip"
       }
     ],
