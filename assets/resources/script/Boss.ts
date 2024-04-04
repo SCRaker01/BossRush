@@ -1,4 +1,5 @@
-import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3, Animation, ERaycast2DType, Graphics, PhysicsSystem2D, randomRangeInt, CCInteger } from 'cc';
+import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3, 
+        Animation, ERaycast2DType, Graphics, PhysicsSystem2D, randomRangeInt, CCInteger } from 'cc';
 import { Player } from './Player';
 
 const { ccclass, property } = _decorator;
@@ -60,7 +61,8 @@ export class Boss extends Component {
         //     this.isHit=false;
         //     return;
         // },this.stunDur);
-        if(!this.deadStat){
+        if(!this.deadStat && !this.isAttacking){
+            
             if (Math.abs(bossPosX - playerPosX)+33
                     > (this.node.getComponent(UITransform).contentSize.x)-1){
         
@@ -78,11 +80,11 @@ export class Boss extends Component {
     
                 
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-                // console.log(Math.abs(bossPosX - playerPosX));
+              
             }else { 
-                if(!this.isAttacking){
-                    this.playAnimation("skellIdle");
-                }
+               
+                this.playAnimation("skellIdle");
+                
                 if(this.canAttack){
                     this.attack();
                 }
@@ -135,22 +137,7 @@ export class Boss extends Component {
     //Harus dibenerin
     attack(){
         this.isAttacking =true;
-        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+16);
-        let p2 = new Vec2(this.node.worldPosition.x+(250*this.directionVal), this.node.worldPosition.y+16);
-        let mask = 0xffffffff;
- 
-        let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-      
-        console.log(p2.x+" "+p2.y);
-        // // let enemy = results[0].collider;
-        // // console.log(enemy.tag);
-        // // console.log(results[0].collider.name+" "+results[0].collider.tag);
-        console.log(results);
-        if(results){
-            if(results[0]!=null && results[0].collider.tag ==0) {
-                results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
-            }
-        }
+        
         let rnd :number = randomRangeInt(0,1);
         if(rnd == 0){
             this.playAnimation("skellAttack1");
@@ -163,8 +150,23 @@ export class Boss extends Component {
 
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{
+            let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+16);
+            let p2 = new Vec2(this.node.worldPosition.x+(250*-this.directionVal), this.node.worldPosition.y+16);
+            let mask = 0xffffffff;
+     
+            let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+          
+            console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
+            // // let enemy = results[0].collider;
+            // // console.log(enemy.tag);
+            // // console.log(results[0].collider.name+" "+results[0].collider.tag);
+            console.log(results);
+            if(results){
+                if(results[0]!=null && results[0].collider.tag ==0) {
+                    results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+                }
+            }
             this.isAttacking = false;
-
         },animTimer);
         
         

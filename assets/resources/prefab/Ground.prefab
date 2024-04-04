@@ -116,10 +116,10 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "28765e2f-040a-4c65-8e8c-f9d0bb79d863@f9941",
+      "__uuid__": "aea1596c-6d38-4ddb-a4d7-d66cdfd0ee99@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 0,
+    "_type": 2,
     "_fillType": 0,
     "_sizeMode": 0,
     "_fillCenter": {
@@ -127,8 +127,8 @@
       "x": 0,
       "y": 0
     },
-    "_fillStart": 0,
-    "_fillRange": 0,
+    "_fillStart": 0.05,
+    "_fillRange": 0.9,
     "_isTrimmedMode": true,
     "_useGrayscale": false,
     "_atlas": null,

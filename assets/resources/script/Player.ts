@@ -312,7 +312,7 @@ export class Player extends Component {
         let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+33);
         let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);
         // let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
-        console.log(p1.x+" "+p1.y);
+        console.log(p1.x+" "+(p1.y-33));
 
         let mask = 0xffffffff;
         // let maxDistance = 10000000;
