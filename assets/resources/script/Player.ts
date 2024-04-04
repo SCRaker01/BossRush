@@ -39,12 +39,13 @@ export class Player extends Component {
     private tempSpeed:number;
     private tempGrav:number;
     private isWallSliding:boolean;
-
+    
     private canDoubleJump:boolean;
     private phySys:PhysicsSystem;
     private directionVal:number;
 
     private deadStat:boolean;
+    private isHit:boolean;
 
    
     onLoad() {
@@ -67,6 +68,8 @@ export class Player extends Component {
         this.canDoubleJump= false;
         this.isWallSliding= false;
         this.deadStat = false;
+
+        this.isHit = false;
         // PhysicsSystem.instance.enable = true;
         // this.phySys = PhysicsSystem.instance;
 
@@ -81,17 +84,11 @@ export class Player extends Component {
     }
 
     update(deltaTime: number) {
-        // console.log(this.rb.group);
-        // console.log(this.attackHitBox.
-        //KONDISI TIDAK/ROLLING
-        // if(this.isWallSliding){
-        //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y*0.7);
-        //     // this.scheduleOnce(()=>{return;},0.5);
-        //     return;
-            
-        // } 
-       
-        // console.log(this.phySys);
+    
+        if(this.isHit){
+            return;
+        }
+
         if(!this.isRolling){
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
 
@@ -179,23 +176,8 @@ export class Player extends Component {
 
     } 
 
-    //METHOD untuk hit box serangan
-    attackHit(selfCollider: BoxCollider2D, otherCollider: CircleCollider2D, contact : IPhysics2DContact|null){
-        if (otherCollider.tag==0){
-            
-            // contact.disabledOnce = true;
-            // console.log(otherCollider.name);
-            // alert("hit");
-            console.log(contact.colliderA.node);
-            console.log(contact.colliderB.node);
-            // let bossNode:Boss = find("Boss").getComponent(Boss);
-            // console.log(bossNode);
-        }
-        
-     
-    }
-    //Harus di set untuk posisi hurtBox
-  
+ 
+    
 
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){
@@ -252,7 +234,7 @@ export class Player extends Component {
                 break;
             case KeyCode.SHIFT_LEFT:
                     // alert("shift");
-                    if(this.canRolling){
+                    if(this.canRolling && !this.isHit){
 
                         this.isRolling = true;
                         this.tempSpeed = this.rb.linearVelocity.x;
@@ -315,18 +297,8 @@ export class Player extends Component {
         console.log(p1.x+" "+(p1.y-33));
 
         let mask = 0xffffffff;
-        // let maxDistance = 10000000;
-        // let queryTrigger = true;
-
-        // console.log(worldRay);
-
-        // let bRes = PhysicsSystem.instance.raycastClosest(worldRay,mask,maxDistance,queryTrigger);
         let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-        // console.log(results);
-        // console.log(this.node.worldPosition.x+" "+this.node.worldPosition.y);
-        // console.log(pos.x+" "+pos.y);
-        // console.log(enemy.collider.tag);
-        // console.log(results);
+     
         if(results){
             
             if(results[0] != null && results[0].collider.tag ==0) {
@@ -364,7 +336,7 @@ export class Player extends Component {
 
     receiveAttackFromBoss(damage:number){
         console.log(damage);
-        // this.isHit=true;
+        this.isHit=true;
         this.playerHealth-=damage;
         console.log(this.playerHealth);
 
@@ -374,6 +346,7 @@ export class Player extends Component {
             this.dead();
         }
         
+        this.scheduleOnce(()=>{this.isHit=false;},0.25);
         // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
         // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
     }

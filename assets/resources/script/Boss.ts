@@ -62,21 +62,22 @@ export class Boss extends Component {
         //     return;
         // },this.stunDur);
         if(!this.deadStat && !this.isAttacking){
-            
-            if (Math.abs(bossPosX - playerPosX)+33
-                    > (this.node.getComponent(UITransform).contentSize.x)-1){
+            if(playerPosX < bossPosX) {
+                this.horizontal = -0.5;
+                if(!this.isFacingRight) this.flip();
+                
+            }
+            else if (playerPosX > bossPosX) {
+                this.horizontal = 0.5;
+                if(this.isFacingRight) this.flip();
+               
+            }
+
+            if (Math.abs(bossPosX - playerPosX)
+                    > (this.node.getComponent(UITransform).contentSize.x)+66){
         
                 this.playAnimation("skellWalk");
-                if(playerPosX < bossPosX) {
-                    this.horizontal = -0.5;
-                    if(!this.isFacingRight) this.flip();
-                    
-                }
-                else if (playerPosX > bossPosX) {
-                    this.horizontal = 0.5;
-                    if(this.isFacingRight) this.flip();
-                   
-                }
+                
     
                 
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
