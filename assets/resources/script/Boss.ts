@@ -51,38 +51,33 @@ export class Boss extends Component {
         this.horizontal = 0;
         this.speed = 4;
     }
-
+    
     update(deltaTime: number) {
         let playerPosX = this.player.getPosition().x;
         let bossPosX = this.node.getPosition().x;
-        // console.log(this.circleC.tag)
         
-        // if(this.isHit) this.scheduleOnce(()=>{
-        //     this.isHit=false;
-        //     return;
-        // },this.stunDur);
+        //Boss tidak sedang menyerang atau mati
         if(!this.deadStat && !this.isAttacking){
-            if(playerPosX < bossPosX) {
+            if(playerPosX < bossPosX) {         //Player disebelah kiri boss
                 this.horizontal = -0.5;
                 if(!this.isFacingRight) this.flip();
                 
             }
-            else if (playerPosX > bossPosX) {
-                this.horizontal = 0.5;
+            else if (playerPosX > bossPosX) {       //Player disebelah kanan boss 
+                this.horizontal = 0.5;                  
                 if(this.isFacingRight) this.flip();
                
             }
 
+            //Jarak antara player dan boss lebih dari ukuran sprite boss + 66
             if (Math.abs(bossPosX - playerPosX)
                     > (this.node.getComponent(UITransform).contentSize.x)+66){
         
                 this.playAnimation("skellWalk");
                 
-    
-                
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
               
-            }else { 
+            }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
                
                 this.playAnimation("skellIdle");
                 
@@ -95,6 +90,8 @@ export class Boss extends Component {
         }
 
     }
+
+    //Method untuk memainkan animasi
     playAnimation(clipName:string){
         if(this.curClipName != clipName){
             this.bossAnim.play(clipName);
@@ -102,21 +99,24 @@ export class Boss extends Component {
         }
     }
 
+    //Method untuk menerima serangan dari player
     receiveAttackFromPlayer(damage:number){
         this.isHit=true;
         this.bossHealth-=damage;
+
         // console.log(this.bossHealth);
+        console.log("boss damage :"+damage);
+        console.log("player health : "+this.bossHealth);
 
         this.playAnimation("skellHurt");
 
         if (this.isDead()) {    
             this.dead();
         }
-        
-        // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
-        // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
+      
     }
 
+    //Method untuk mengecek apakah boss mati atau tidak
     isDead():boolean{
         // console.log(this.bossHealth);
         if(this.bossHealth<=0) {
@@ -126,16 +126,13 @@ export class Boss extends Component {
         else return false;
     }
 
+    //Method yang dimainkan ketika boss mati
     dead(){
         this.playAnimation("skellDie");
         this.scheduleOnce(()=>{this.node.active=false;},this.stunDur);
     }
 
-    knockback(){
-        // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*0.5, this.rb.linearVelocity.y*0.5);
-    }
-
-    //Harus dibenerin
+    //Method serangan dari boss dengan menggunakan raycast
     attack(){
         this.isAttacking =true;
         
@@ -149,19 +146,18 @@ export class Boss extends Component {
   
         this.canAttack = false;
 
+                                            // Serangan dilakukan setelah animasi selesai
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{
-            let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+16);
+            let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
             let p2 = new Vec2(this.node.worldPosition.x+(250*-this.directionVal), this.node.worldPosition.y+16);
             let mask = 0xffffffff;
      
             let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
           
-            console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
-            // // let enemy = results[0].collider;
-            // // console.log(enemy.tag);
-            // // console.log(results[0].collider.name+" "+results[0].collider.tag);
-            console.log(results);
+            // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
+      
+            // console.log(results);
             if(results){
                 if(results[0]!=null && results[0].collider.tag ==0) {
                     results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);

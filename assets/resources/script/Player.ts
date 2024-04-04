@@ -1,9 +1,8 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt,
-    Prefab,geometry,physics, PhysicsSystem,
-    ERaycast2DType,
-    Graphics} from 'cc';
+    Prefab, ERaycast2DType,
+    } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
 const { ccclass, property } = _decorator;
@@ -37,11 +36,9 @@ export class Player extends Component {
     private attackCD:number;
     
     private tempSpeed:number;
-    private tempGrav:number;
     private isWallSliding:boolean;
     
     private canDoubleJump:boolean;
-    private phySys:PhysicsSystem;
     private directionVal:number;
 
     private deadStat:boolean;
@@ -55,8 +52,8 @@ export class Player extends Component {
         this.playerAnim = this.node.getComponent(Animation);
         this.collider = this.node.getComponent(CircleCollider2D); 
         this.attackHitBox= this.node.getComponent(BoxCollider2D);
-        
         this.rb = this.node.getComponent(RigidBody2D);
+
         this.horizontal = 0;
         this.speed = 8;
         this.rollCD = 2;
@@ -66,12 +63,10 @@ export class Player extends Component {
         this.canRolling = true;
         this.canAttack = true;
         this.canDoubleJump= false;
+
         this.isWallSliding= false;
         this.deadStat = false;
-
         this.isHit = false;
-        // PhysicsSystem.instance.enable = true;
-        // this.phySys = PhysicsSystem.instance;
 
     }
 
@@ -84,63 +79,64 @@ export class Player extends Component {
     }
 
     update(deltaTime: number) {
-    
-        if(this.isHit){
-            return;
-        }
-
-        if(!this.isRolling){
-            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-
-            //BERLARI
-            if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
-  
-                this.playAnimation("heroRun");
-            //DIAM
-            } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
-    
-                this.playAnimation("heroIdle");
-                
+        if(!this.deadStat){
+            if(this.isHit){
+                return;
             }
 
-        } else {
-            //ROLLING
-            if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
-                this.canRolling = false;
-                this.playAnimation("heroRoll");
-                
-                this.rb.linearVelocity = new Vec2(this.tempSpeed*2, this.rb.linearVelocity.y);
-                this.scheduleOnce(()=>{
-                 
-                    this.isRolling=false;
-                    this.tempSpeed = 0;
-                },0.68);
-
-            }
-
-            if(!this.isOnGround) this.isRolling=false;
-
-            //TIMER UNTUK BISA ROLL LAGI
-            this.scheduleOnce(()=>{this.canRolling = true;},this.rollCD);
-        }
+            if(!this.isRolling){
+                this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+    
+                //BERLARI
+                if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
+      
+                    this.playAnimation("heroRun");
+                //DIAM
+                } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
         
-        //Lompat
-        //Disatukan dengan input "lompat" ,tidak ditaruh di dalam update(); sebagai solusi untuk isu double jump
-
-        //Terjun setelah lompat
-        if (!this.isOnGround && this.rb.linearVelocity.y<0){
+                    this.playAnimation("heroIdle");
+                    
+                }
+    
+            } else {
+                //ROLLING
+                if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
+                    this.canRolling = false;
+                    this.playAnimation("heroRoll");
+                    
+                    this.rb.linearVelocity = new Vec2(this.tempSpeed*2, this.rb.linearVelocity.y);
+                    this.scheduleOnce(()=>{
+                     
+                        this.isRolling=false;
+                        this.tempSpeed = 0;
+                    },0.68);
+    
+                }
+    
+                if(!this.isOnGround) this.isRolling=false;
+    
+                //TIMER UNTUK BISA ROLL LAGI
+                this.scheduleOnce(()=>{this.canRolling = true;},this.rollCD);
+            }
             
-            this.playAnimation("heroFall");
+            //Lompat
+            //Disatukan dengan input "lompat" ,tidak ditaruh di dalam update(); sebagai solusi untuk isu double jump
+    
+            //Terjun setelah lompat
+            if (!this.isOnGround && this.rb.linearVelocity.y<0){
+                
+                this.playAnimation("heroFall");
+            }
+            // console.log(this.rb.linearVelocity);
         }
-        // console.log(this.rb.linearVelocity);
     }
 
+    //Method Jump
     jump(){
         this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
         this.isJumping=false;
         this.isOnGround=false;
         this.isRolling=false;
-        // this.canDoubleJump=true;
     }
 
     
@@ -169,15 +165,9 @@ export class Player extends Component {
 
             // this.scheduleOnce(()=>{return;},0.25);
         }
-        if(otherCollider.tag==3){
-            // this.playAnimation("heroWallSlide");
-            // this.isWallSliding=true;
-        }
 
     } 
 
- 
-    
 
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){
@@ -196,12 +186,6 @@ export class Player extends Component {
                     this.flip();
                 }
                 this.horizontal=1;
-                // if(this.isWallSliding){
-                //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-                //     this.isWallSliding=false;
-                // }
-                // this.wallJump(1);
-               
 
                 break;
             case KeyCode.ARROW_LEFT:
@@ -210,12 +194,7 @@ export class Player extends Component {
                     this.flip();
                 }
                 this.horizontal=-1;
-                // if(this.isWallSliding){
-                //     this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-                //     this.isWallSliding=false;
-                // }
-                // this.wallJump(1);
-                
+
 
                 break;
             case KeyCode.ARROW_UP:
@@ -229,11 +208,11 @@ export class Player extends Component {
                     
                 }
                 this.isJumping = true;
-                // this.wallJump(1.5);
+         
                 
                 break;
             case KeyCode.SHIFT_LEFT:
-                    // alert("shift");
+            
                     if(this.canRolling && !this.isHit){
 
                         this.isRolling = true;
@@ -281,20 +260,14 @@ export class Player extends Component {
 
 
 
-    knockback(){
-        // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*1.5, this.jumpForce*1.5);
-    }
-
+    //Method attack pakai raycast
     attack(){
-        // this.attackHitBox.on(Contact2DType.BEGIN_CONTACT,this.attackHit,this);
-        // this.attackHitBox.node.active = true;
-        let ctx:Graphics = null;
-        // this.createHurtBox();
+        //Cari posisi awal dan akhir serangan   
         let pos = this.node.getPosition();
-        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y+33);
-        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);
-        // let worldRay = new geometry.Ray(pos.x,pos.y,0, 10,0,0);
-        console.log(p1.x+" "+(p1.y-33));
+        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
+        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);     //Dibuat jadi diagonal serangannya
+
+        // console.log(p1.x+" "+(p1.y-33));
 
         let mask = 0xffffffff;
         let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
@@ -308,11 +281,11 @@ export class Player extends Component {
         }
     
         
-    
+        //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;
 
+        //Mainkan random animation
         let rnd :number = randomRangeInt(0,2);
-       
         if(rnd==0){
             this.playerAnim.play("heroAttack1");
         } else if(rnd==1){
@@ -322,23 +295,22 @@ export class Player extends Component {
             
         }
         
-        
+        //Scheduler untuk menyalakan boolean serangan
         this.scheduleOnce(()=>{
             if(Math.abs(this.rb.linearVelocity.x)==0)this.playerAnim.play("heroIdle");
             else this.playerAnim.play("heroRun");
-
-
             this.canAttack = true;
             
         },this.attackCD);
         
     }
 
+    //Method menerima serangan dari musuh/boss
     receiveAttackFromBoss(damage:number){
-        console.log(damage);
         this.isHit=true;
         this.playerHealth-=damage;
-        console.log(this.playerHealth);
+        console.log("boss damage :"+damage);
+        console.log("player health : "+this.playerHealth);
 
         this.playAnimation("heroHurt");
 
@@ -346,10 +318,13 @@ export class Player extends Component {
             this.dead();
         }
         
-        this.scheduleOnce(()=>{this.isHit=false;},0.25);
-        // if(isFacingRight) this.rb.linearVelocity = new Vec2(this.speed*2.5, this.rb.linearVelocity.y*0.5);
-        // else this.rb.linearVelocity = new Vec2(this.speed*-2.5, this.rb.linearVelocity.y*0.5);
+        this.scheduleOnce(()=>{
+            this.isHit=false;
+        },0.25);
+       
     }
+
+    //Method untuk mengecek apakah mati atau tidak
     isDead():boolean {
         if(this.playerHealth<=0) {
             this.deadStat=true;
@@ -359,8 +334,10 @@ export class Player extends Component {
     }
 
     //----------------------------------------------------------------
+    //Method ketika player mati
     dead(){
-
+        this.deadStat = true
+        this.playAnimation("heroDeath");
     }
     
 }
