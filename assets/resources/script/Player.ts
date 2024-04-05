@@ -79,6 +79,7 @@ export class Player extends Component {
     }
 
     update(deltaTime: number) {
+        console.log(this.horizontal);
         if(!this.deadStat){
             if(this.isHit){
                 return;
@@ -225,13 +226,10 @@ export class Player extends Component {
                     this.attack();
                   
                 }
-
-        }
-    }
-    wallJump(wallJumpPower:number){
-        if(this.isWallSliding){
-            this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*wallJumpPower);
-            this.isWallSliding=false;
+                break;
+            case KeyCode.SHIFT_RIGHT:
+                if(Math.abs(this.horizontal)==1)this.horizontal*=2;
+                break;
         }
     }
 
@@ -244,19 +242,16 @@ export class Player extends Component {
             case KeyCode.KEY_A:
                 this.horizontal=0;
                 break;
+            case KeyCode.SHIFT_RIGHT:
+                if(Math.abs(this.horizontal)>1)this.horizontal/=2;
         }
     }
 
-    keyPress(event:EventKeyboard){
-        switch(event.keyCode){
-            case KeyCode.ARROW_RIGHT:
-            case KeyCode.KEY_D:
-            case KeyCode.ARROW_LEFT:
-            case KeyCode.KEY_A:
-                this.horizontal=0;
-                break;
-        }
-    }
+    // keyPress(event:EventKeyboard){
+    //     switch(event.keyCode){
+            
+    //     }
+    // }
 
 
 
@@ -292,7 +287,6 @@ export class Player extends Component {
             this.playerAnim.play("heroAttack2");
         }else {
             this.playerAnim.play("heroAttack3");
-            
         }
         
         //Scheduler untuk menyalakan boolean serangan
