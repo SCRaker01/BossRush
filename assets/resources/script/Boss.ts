@@ -1,6 +1,7 @@
 import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform, Vec2, Vec3, 
         Animation, ERaycast2DType, Graphics, PhysicsSystem2D, randomRangeInt, CCInteger } from 'cc';
 import { Player } from './Player';
+import { HealthBar } from './HealthBar';
 
 const { ccclass, property } = _decorator;
 
@@ -10,13 +11,15 @@ export class Boss extends Component {
     /*@property({type:Node})*/ private player:Node;
     @property({type:CCInteger}) private bossHealth:number;
     @property({type:CCInteger}) private bossDamage:number;
+  
 
     private rb:RigidBody2D;
-    private circleC:CircleCollider2D;
+    // private circleC:CircleCollider2D;
     private bossAnim:Animation;
     private curClipName:string;
+    private heatlthBar:HealthBar;
     
-    private isHit:boolean;
+    // private isHit:boolean;
     private isFacingRight:boolean;
     private horizontal:number;
     private speed:number;
@@ -32,13 +35,13 @@ export class Boss extends Component {
 
     onLoad(){
         this.rb = this.node.getComponent(RigidBody2D);
-        this.circleC = this.node.getComponent(CircleCollider2D);
+        // this.circleC = this.node.getComponent(CircleCollider2D);
         this.bossAnim = this.node.getComponent(Animation);
         // this.curClipName = this.bossAnim.defaultClip.toString();
         let parentNode = this.node.getParent();
         this.player = parentNode.getChildByName("Player");
         this.stunDur = 1;                                   //Sementar waktu untuk skellHit
-        this.isHit=false;
+        // this.isHit=false;
 
         this.directionVal = -1;
         this.canAttack= true;
@@ -50,6 +53,9 @@ export class Boss extends Component {
     start() {
         this.horizontal = 0;
         this.speed = 4;
+
+        this.heatlthBar = this.node.getParent().getChildByName("HealthContainer").getComponent(HealthBar);
+        this.heatlthBar.setEnemyBaseHealth(this.bossHealth);
     }
     
     update(deltaTime: number) {
@@ -101,12 +107,15 @@ export class Boss extends Component {
 
     //Method untuk menerima serangan dari player
     receiveAttackFromPlayer(damage:number){
-        this.isHit=true;
+        // this.isHit=true;
+        this.heatlthBar.showEnemyHB();
         this.bossHealth-=damage;
 
         // console.log(this.bossHealth);
         console.log("boss damage :"+damage);
         console.log("player health : "+this.bossHealth);
+
+        this.heatlthBar.updateHealth("Boss",this.bossHealth);
 
         this.playAnimation("skellHurt");
 

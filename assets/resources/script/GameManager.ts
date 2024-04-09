@@ -1,59 +1,55 @@
-import { _decorator, Camera, Component, instantiate, Node, Prefab, UITransform, Vec3 } from 'cc';
+import { _decorator, Component,Node,  UITransform,  Vec3 } from 'cc';
+import { HealthBar } from './HealthBar';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameManager')
 export class GameManager extends Component {
     @property({type:Node}) camera:Node;
+    @property({type:Node}) canvas:Node;
     @property({type:Node}) player:Node;
-    @property({type:Prefab}) ground:Prefab;
-    @property({type:Node}) mainGround:Node;
+    @property({type:Node}) boss:Node;
+
+    @property({type:HealthBar}) hb:HealthBar;
 
     private leftEdge:number;
     private rightEdge:number;
     private size:number;
+    private tempSize:number;
     private playerPos:Vec3;
+    private bossPos:Vec3;
+    private bossSize:number;
 
     start() {
+        this.bossSize = this.boss.getComponent(UITransform).contentSize.x/2;
+        // this.size = this.camera.getComponent(UITransform).contentSize.x/2;
+        this.size = this.canvas.getComponent(UITransform).contentSize.x;
+        // console.log(this.size);
+    }
 
-        this.leftEdge = -this.mainGround.getPosition().x/2;
-        this.rightEdge = this.mainGround.getComponent(UITransform).contentSize.x/2;
-        this.size = this.mainGround.getComponent(UITransform).contentSize.x/2;
-        
-        
-    }
-    
-    instantiateGround():Node{
-        return instantiate(this.ground);
-    }
-    
-    setNewGround(posX:number){
-        let ground = this.instantiateGround();
-        ground.setParent(this.mainGround);
-        ground.setPosition(new Vec3(posX,-340,0));
-        // console.log(ground.getPosition().x);
-    }
-    
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
+        this.bossPos = this.boss.getPosition();
+        
+        // this.tempSize = Math.abs()
+        // this.leftEdge = this.playerPos.x- (this.size+this.bossSize);
+        // this.rightEdge = this.playerPos.x+ (this.size+this.bossSize);
         // console.log(this.playerPos.x)
+
         if(this.playerPos.x>=-1280 && this.playerPos.x<=640){
-            this.camera.setPosition(new Vec3(this.player.getPosition().x, 0,0));
+            this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
 
         }
-        
+        // console.log(this.bossPos.x+" "+this.playerPos.x+" "+this.leftEdge+" "+this.rightEdge);
 
-        // if(this.playerPos.x>=this.rightEdge){
-        //     console.log(this.rightEdge);
-        //     this.setNewGround(this.rightEdge);
-        //     this.rightEdge=+this.size;
+        // if(this.bossPos.x>this.leftEdge && this.bossPos.x<this.rightEdge){
+        //     this.hb.showEnemyHB();
+        //     // console.log("show")
+        // }else {
+        //     this.hb.hideEnemyHB();
+        //     // console.log("hide")
         // }
+
         
-        // if(this.playerPos.x<=this.leftEdge){
-        //     console.log(this.leftEdge);
-        //     this.setNewGround(this.leftEdge);
-        //     this.leftEdge-=this.size;
-        //     // console.log(this.leftEdge);
-        // }
     
     }
 }

@@ -1,57 +1,128 @@
-import { _decorator, Component, instantiate, Node, Prefab,resources,screen, Sprite, SpriteFrame } from 'cc';
-import { Player } from './Player';
-import { Boss } from './Boss';
+import { _decorator, Component, instantiate, Label, Node, Prefab,resources,screen, Sprite, SpriteFrame, Vec3 } from 'cc';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('HealthBar')
 export class HealthBar extends Component {
     @property({type:Prefab}) private heroHB:Prefab;
     @property({type:Prefab}) private enemyHB:Prefab;
-    @property({type:Player}) private player:Player;
-    @property({type:Boss}) private boss:Boss;
+    
+    private hbHero:Node;
+    private hbBoss:Node;
 
     private camNode: Node;
     private url: String;
 
-    private hbHero:Node;
-    private hbEnemy:Node;
-    
+    private basePlayerHeatlh :number;
+    private baseEnemyHeatlh :number;
 
-    start() {
+    onLoad() {
         this.camNode = this.node.getParent().getChildByName("Camera");
 
-        this.hbHero = instantiate(this.heroHB);
-        this.hbEnemy = instantiate(this.enemyHB);
-
-        this.node.addChild(this.hbHero);
-        this.node.addChild(this.hbEnemy);
-
-
-        this.heroIcon();
+        this.instatiateHeroIcon();
+        this.instatiateBossIcon();
+        this.restartHB();
         
     }
     
     update(deltaTime: number) {
         this.hbHero.setPosition(this.camNode.getPosition().x-screen.windowSize.x/2.75, this.camNode.getPosition().y+screen.windowSize.y/2.75);
-        if(this.hbEnemy.active) {
-            this.hbEnemy.setPosition(this.camNode.getPosition().x+screen.windowSize.x/2.75, this.camNode.getPosition().y+screen.windowSize.y/2.75);
+        if(this.hbBoss.active) {
+            this.hbBoss.setPosition(this.camNode.getPosition().x+screen.windowSize.x/2.75, this.camNode.getPosition().y+screen.windowSize.y/2.75);
             
         }
 
     }
 
-    heroIcon(){
-        let heroUrl = this.url+ "/con23";
-        
+    instatiateHeroIcon(){
+        this.hbHero = instantiate(this.heroHB);
         resources.load("sprite/other/avatar/PNG/Background/con1/spriteFrame", SpriteFrame, null, (err:any, spriteFrame)=> {
             let sprite:Sprite = this.hbHero.getChildByName("Icon").getComponent(Sprite);
             sprite.spriteFrame = spriteFrame;
         });
+        this.node.addChild(this.hbHero);
+    }
+
+    instatiateBossIcon(){
+        this.hbBoss = instantiate(this.enemyHB);
+        this.hbBoss.name = "EnemyHealthBar";
+
+        resources.load("sprite/other/avatar/PNG/Background/con23/spriteFrame", SpriteFrame, null, (err:any, spriteFrame)=> {
+            let sprite:Sprite = this.hbBoss.getChildByName("Icon").getComponent(Sprite);
+            sprite.spriteFrame = spriteFrame;
+        });
+        
+
+        let enScale = this.hbBoss.getScale();
+        this.hbBoss.setScale(new Vec3(enScale.x*-1,1,1));
+        this.hbBoss.getChildByName("Icon").setScale(new Vec3(this.hbBoss.getChildByName("Icon").getScale().x,1,1));
+        this.hbBoss.getChildByName("Bar").setScale(new Vec3(this.hbBoss.getChildByName("Bar").getScale().x*-1,1,1));
+        this.node.addChild(this.hbBoss);
+
+    }
+
+    timerBossHB(){
+        this.showEnemyHB();
+
+
+    }
+
+    restartHB(){
+        this.hbHero.active = true;
+        this.hideEnemyHB();
+    }
+
+    showEnemyHB(){
+        this.hbBoss.active = true;
     }
     
-    updateHeroHealth(){
+    hideEnemyHB(){
+        this.hbBoss.active = false;
+
+    }
+
+    setPlayerBaseHealth(baseHealth: number){
+        this.basePlayerHeatlh = baseHealth;
+    }
+
+    setEnemyBaseHealth(baseHealth: number){
+        this.baseEnemyHeatlh = baseHealth;
+    }
+
+    updateHealth(name:String, currHealth:number){
+        let percHealth;
+        if(name=="Player"){
+            percHealth = currHealth/this.basePlayerHeatlh;
+            if(percHealth*100 > 0){
+                this.updateHeroHB(percHealth);
+            } else{
+                this.hbHero.active =false
+            }
+        } else if(name == "Boss"){
+            percHealth = currHealth/this.baseEnemyHeatlh;
+            // console.log(percHealth);
+            if(percHealth*100 > 0){
+                this.updateBossHB(percHealth);
+            } else{
+                this.hbBoss.active =false
+            }
+        }
         
     }
+
+    updateBossHB(percHealth:number){
+        let bossBar = this.hbBoss.getChildByName("Bar"); 
+        bossBar.getComponent(Sprite).fillRange = percHealth;
+        bossBar.getChildByName("Label").getComponent(Label).string = (percHealth*100) +"%";
+    }
+
+    updateHeroHB(percHealth:number){
+        let heroBar = this.hbHero.getChildByName("Bar"); 
+        heroBar.getComponent(Sprite).fillRange = percHealth;
+        heroBar.getChildByName("Label").getComponent(Label).string = (percHealth*100) +"%";
+    }
+
+
     
 }
 

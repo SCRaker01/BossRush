@@ -5,6 +5,7 @@ import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,inp
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
+import { HealthBar } from './HealthBar';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -16,7 +17,8 @@ export class Player extends Component {
     @property({type:Prefab}) private hurtBox:Prefab;
     
     private vy :number=0;
-
+    
+    private heatlthBar:HealthBar;
     private rb:RigidBody2D;
     private playerAnim:Animation;
     private collider:CircleCollider2D;
@@ -49,6 +51,7 @@ export class Player extends Component {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
         input.on(Input.EventType.KEY_UP,this.keyUp,this);
         // input.on(Input.EventType.KEY_PRESSING,this.keyPress,this);
+
         this.playerAnim = this.node.getComponent(Animation);
         this.collider = this.node.getComponent(CircleCollider2D); 
         this.attackHitBox= this.node.getComponent(BoxCollider2D);
@@ -76,10 +79,14 @@ export class Player extends Component {
         this.curClipName = this.playerAnim.defaultClip.toString();
         
         PhysicsSystem2D.instance.gravity = v2(0, -25 * PHYSICS_2D_PTM_RATIO);
+
+        this.heatlthBar = this.node.getParent().getChildByName("HealthContainer").getComponent(HealthBar);
+        this.heatlthBar.setPlayerBaseHealth(this.playerHealth);
+        
     }
 
     update(deltaTime: number) {
-        console.log(this.horizontal);
+        // console.log(this.horizontal);
         if(!this.deadStat){
             if(this.isHit){
                 return;
@@ -254,7 +261,7 @@ export class Player extends Component {
     // }
 
 
-
+    private attackAnimNum:number=-1;
     //Method attack pakai raycast
     attack(){
         //Cari posisi awal dan akhir serangan   
@@ -280,10 +287,11 @@ export class Player extends Component {
         this.canAttack = false;
 
         //Mainkan random animation
-        let rnd :number = randomRangeInt(0,2);
-        if(rnd==0){
+        // let rnd :number = randomRangeInt(0,2);
+        this.attackAnimNum++;
+        if(this.attackAnimNum%3==0){
             this.playerAnim.play("heroAttack1");
-        } else if(rnd==1){
+        } else if(this.attackAnimNum%3==1){
             this.playerAnim.play("heroAttack2");
         }else {
             this.playerAnim.play("heroAttack3");
@@ -307,7 +315,7 @@ export class Player extends Component {
         console.log("player health : "+this.playerHealth);
 
         this.playAnimation("heroHurt");
-
+        this.heatlthBar.updateHealth("Player",this.playerHealth);
         if (this.isDead()) {    
             this.dead();
         }

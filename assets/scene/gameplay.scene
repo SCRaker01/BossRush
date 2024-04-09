@@ -144,15 +144,17 @@
     "camera": {
       "__id__": 5
     },
+    "canvas": {
+      "__id__": 6
+    },
     "player": {
       "__id__": 105
     },
-    "ground": {
-      "__uuid__": "f7ba5919-ccb3-45a4-95b7-0099ad84aa18",
-      "__expectedType__": "cc.Prefab"
+    "boss": {
+      "__id__": 152
     },
-    "mainGround": {
-      "__id__": 20
+    "hb": {
+      "__id__": 9
     },
     "_id": "d7DDTieMNGvKKYmRzybfXw"
   },
@@ -192,7 +194,7 @@
       "z": 1
     },
     "_mobility": 0,
-    "_layer": 1073741824,
+    "_layer": 33554432,
     "_euler": {
       "__type__": "cc.Vec3",
       "x": 0,
@@ -359,7 +361,7 @@
       "__expectedType__": "cc.Prefab"
     },
     "enemyHB": {
-      "__uuid__": "37e5432b-dd1a-4e9f-babe-bd631160431d",
+      "__uuid__": "3927f4ef-2d9e-4592-a9ca-24c24a2eca46",
       "__expectedType__": "cc.Prefab"
     },
     "_id": "1f/KKEsbNOjLyviBnO8HI7"
@@ -2529,7 +2531,7 @@
     "__prefab": null,
     "_projection": 0,
     "_priority": 0,
-    "_fov": 45,
+    "_fov": 43,
     "_fovAxis": 0,
     "_orthoHeight": 378.546365914787,
     "_near": 0,
@@ -2599,7 +2601,7 @@
     "asset": null,
     "fileId": "88cac4e8-daba-4005-b0bd-96768b937eae",
     "instance": null,
-    "targetOverrides": null,
+    "targetOverrides": [],
     "nestedPrefabInstanceRoots": [
       {
         "__id__": 11
