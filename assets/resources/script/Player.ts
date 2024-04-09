@@ -1,11 +1,13 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt,
-    Prefab, ERaycast2DType,
+    Prefab, ERaycast2DType, Node,
+    instantiate,
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
 import { HealthBar } from './HealthBar';
+import { Pool } from './Pool';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -14,7 +16,7 @@ export class Player extends Component {
     @property({type: CCFloat}) private jumpForce:number;
     @property({type: CCFloat}) private playerDamage:number;
     @property({type: CCFloat}) private playerHealth:number;
-    @property({type:Prefab}) private hurtBox:Prefab;
+    @property({type:Pool}) private pool:Pool;
     
     private vy :number=0;
     
@@ -41,10 +43,12 @@ export class Player extends Component {
     private isWallSliding:boolean;
     
     private canDoubleJump:boolean;
-    private directionVal:number;
-
+    
     private deadStat:boolean;
     private isHit:boolean;
+    
+    directionVal:number;
+  
 
    
     onLoad() {
@@ -137,8 +141,16 @@ export class Player extends Component {
             }
             // console.log(this.rb.linearVelocity);
         }
+    
+        
     }
 
+    spawnBullet(){
+        // if(this.bulletPool.length ==0){
+            this.pool.instatiateBullet();
+        // } 
+    }
+   
     //Method Jump
     jump(){
         this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
@@ -172,6 +184,10 @@ export class Player extends Component {
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*-2, this.rb.linearVelocity.y);
 
             // this.scheduleOnce(()=>{return;},0.25);
+        }
+
+        if(selfCollider.name == "Bullet" && (otherCollider.name == "Boss"||otherCollider.name == "Wall")){
+            console.log(selfCollider.name);
         }
 
     } 
@@ -233,6 +249,9 @@ export class Player extends Component {
                     this.attack();
                   
                 }
+                break;
+            case KeyCode.KEY_K:
+                this.spawnBullet();
                 break;
             case KeyCode.SHIFT_RIGHT:
                 if(Math.abs(this.horizontal)==1)this.horizontal*=2;
@@ -341,6 +360,8 @@ export class Player extends Component {
         this.deadStat = true
         this.playAnimation("heroDeath");
     }
+
+    
     
 }
 
