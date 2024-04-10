@@ -43,7 +43,7 @@ export class Bullet extends Component { private boss:Boss;
 
     update(deltaTime: number) {
         if(!this.statusCrashing){
-            this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, 0);
+            this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, this.rb.linearVelocity.y);
 
         }
         

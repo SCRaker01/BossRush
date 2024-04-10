@@ -34,6 +34,8 @@ export class Boss extends Component {
     private deadStat:boolean;
     private isAttacking:boolean;
 
+    private attackAnimNum;
+
 
     onLoad(){
         this.rb = this.node.getComponent(RigidBody2D);
@@ -54,6 +56,7 @@ export class Boss extends Component {
 
     start() {
         this.horizontal = 0;
+        this.attackAnimNum=-1;
         this.speed = 4;
 
         this.heatlthBar = this.node.getParent().getChildByName("HealthContainer").getComponent(HealthBar);
@@ -81,16 +84,17 @@ export class Boss extends Component {
             if (Math.abs(bossPosX - playerPosX)
                     > (this.node.getComponent(UITransform).contentSize.x)+66){
         
-                this.playAnimation("skellWalk");
-                
-                this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-
                 if(this.canAttack){
                     this.spawnBullet();
+                } else {
+
+                    this.playAnimation("skellWalk");
                 }
-              
+                
+                this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+            
             }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
-               
+                
                 this.playAnimation("skellIdle");
                 
                 if(this.canAttack){
@@ -98,8 +102,9 @@ export class Boss extends Component {
                 }
             }
             
-
+            
         }
+        // console.log(this.curClipName);
 
     }
 
@@ -135,12 +140,13 @@ export class Boss extends Component {
         this.pool.node.setPosition(this.node.getPosition());
         this.pool.shoot(this.directionVal);
         this.canAttack=false;
-        this.isAttacking = true;
+        // this.isAttacking = true;
+        // this.playAnimation("skellIdle");
 
         this.scheduleOnce(()=>{
             this.canAttack = true;
-            this.isAttacking = false;
-        },1);
+            
+        },2);
     }
 
     //Method untuk mengecek apakah boss mati atau tidak
@@ -163,10 +169,11 @@ export class Boss extends Component {
     attack(){
         this.isAttacking =true;
         
-        let rnd :number = randomRangeInt(0,1);
-        if(rnd == 0){
+       
+        this.attackAnimNum++;
+        if(this.attackAnimNum%2 == 0){
             this.playAnimation("skellAttack1");
-        } else{
+        } else if (this.attackAnimNum%2 == 1) {
             this.playAnimation("skellAttack2");
 
         }
@@ -176,19 +183,22 @@ export class Boss extends Component {
                                             // Serangan dilakukan setelah animasi selesai
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{
-            let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-            let p2 = new Vec2(this.node.worldPosition.x+(250*-this.directionVal), this.node.worldPosition.y+16);
-            let mask = 0xffffffff;
-     
-            let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+            for(let i =0 ;i< 3;i++){
+                let p1 = new Vec2(this.node.worldPosition.x, 77+(i*15));
+                let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 77+(i*45));
+                let mask = 0xffffffff;
+         
+                let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+                
           
-            // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
-      
-            // console.log(results);
-            if(results){
-                if(results[0]!=null && results[0].collider.tag ==0) {
-                    results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+        
+                if(results){
+    
+                    if(results[0]!=null && results[0].collider.tag ==1) {
+                        results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+                    }
                 }
+
             }
             this.isAttacking = false;
         },animTimer);

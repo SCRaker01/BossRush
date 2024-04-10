@@ -281,29 +281,26 @@ export class Player extends Component {
     //Method attack pakai raycast
     attack(){
         //Cari posisi awal dan akhir serangan   
-        let pos = this.node.getPosition();
-        let p1 = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y+33);     //Dibuat jadi diagonal serangannya
-
-        // console.log(p1.x+" "+(p1.y-33));
-
+        let p1 = new Vec2(this.node.worldPosition.x-(20*this.directionVal), this.node.worldPosition.y);
+        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
         let mask = 0xffffffff;
+
+        // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
+
         let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-     
+
         if(results){
-            
+            console.log(results);
+            console.log(results[0]);
             if(results[0] != null && results[0].collider.tag ==0) {
                 results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
             }
 
         }
-    
-        
+
         //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;
 
-        //Mainkan random animation
-        // let rnd :number = randomRangeInt(0,2);
         this.attackAnimNum++;
         if(this.attackAnimNum%3==0){
             this.playerAnim.play("heroAttack1");
@@ -359,10 +356,7 @@ export class Player extends Component {
     dead(){
         this.deadStat = true
         this.playAnimation("heroDeath");
-    }
-
-    
-    
+    }    
 }
 
 
