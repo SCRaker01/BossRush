@@ -1,26 +1,69 @@
-import { _decorator, Component, Node, Prefab, RigidBody2D, Vec2 } from 'cc';
+import { _decorator, CircleCollider2D, Collider2D, Component, Contact2DType, 
+    IPhysics2DContact, Node, Prefab, RigidBody2D, Vec2, Vec3,Animation, 
+    CCFloat} from 'cc';
+import { Boss } from './Boss';
 const { ccclass, property } = _decorator;
 
+
 @ccclass('Bullet')
-export class Bullet extends Component {
+export class Bullet extends Component { private boss:Boss;
     
+    @property({type: CCFloat})private damage:number;
+    @property({type: CCFloat})private speed: number;;
     private rb: RigidBody2D;    
-    private speed: number;
-    private directionVal:number;
-    start(){
+    private collider :CircleCollider2D;
+    
+    directionVal:number;
+    private statusCrashing:boolean;
+    
+    animation :Animation;
+
+
+    onLoad(){
+        this.animation = this.node.getComponent(Animation);
         this.rb = this.node.getComponent(RigidBody2D);
-        this.directionVal=1;
+        this.collider =  this.node.getComponent(CircleCollider2D);
+
     }
 
-    spawnDir(directionVal:number){
-        this.directionVal = directionVal;
+    start(){
+        this.collider.on(Contact2DType.BEGIN_CONTACT,this.onTouch,this);
+        
+        this.speed = 10;
+        this.statusCrashing = false;
+        
+    }
+    
+    setSpawnAndDirection(pos:Vec3,direction:number){
+        this.node.setPosition(pos);
+        this.directionVal = direction;
+        this.statusCrashing = false;
     }
 
     update(deltaTime: number) {
-        this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, 0);
+        if(!this.statusCrashing){
+           
+            this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, 0);
+
+        }
+        
     }
 
-    
+    onTouch(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
+        this.animation.play("crash");
+
+        if(otherCollider.tag ==0){
+            let boss = this.node.getParent().getChildByName("Boss").getComponent(Boss);
+            boss.receiveAttackFromPlayer(this.damage);
+        }
+
+        this.statusCrashing = true;
+        this.scheduleOnce(()=>{
+            this.node.active = false;
+
+        },0.1)
+        
+    } 
 
 }
 

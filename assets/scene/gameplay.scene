@@ -26,7 +26,7 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 193
+      "__id__": 185
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -57,7 +57,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 194
+      "__id__": 186
     },
     "_id": "88cac4e8-daba-4005-b0bd-96768b937eae"
   },
@@ -170,7 +170,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 191
+        "__id__": 183
       }
     ],
     "_prefab": null,
@@ -235,21 +235,18 @@
       },
       {
         "__id__": 156
-      },
-      {
-        "__id__": 181
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 189
+        "__id__": 181
       },
       {
-        "__id__": 190
+        "__id__": 182
       },
       {
-        "__id__": 192
+        "__id__": 184
       }
     ],
     "_prefab": null,
@@ -393,8 +390,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
+      "x": -880.043,
+      "y": -250.482,
       "z": 0
     },
     "_lrot": {
@@ -2589,117 +2586,6 @@
     ]
   },
   {
-    "__type__": "cc.Node",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 6
-    },
-    "_prefab": {
-      "__id__": 182
-    },
-    "__editorExtras__": {}
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 181
-    },
-    "asset": {
-      "__uuid__": "0798a28b-3d21-4e1d-83b4-3ad5122dd0e7",
-      "__expectedType__": "cc.Prefab"
-    },
-    "fileId": "adGxjYLWBHLZAIpCI6Y/6q",
-    "instance": {
-      "__id__": 183
-    },
-    "targetOverrides": null,
-    "nestedPrefabInstanceRoots": null
-  },
-  {
-    "__type__": "cc.PrefabInstance",
-    "fileId": "aa9q575mdOabGq3NIPtRLI",
-    "prefabRootNode": null,
-    "mountedChildren": [],
-    "mountedComponents": [],
-    "propertyOverrides": [
-      {
-        "__id__": 184
-      },
-      {
-        "__id__": 186
-      },
-      {
-        "__id__": 187
-      },
-      {
-        "__id__": 188
-      }
-    ],
-    "removedComponents": []
-  },
-  {
-    "__type__": "CCPropertyOverrideInfo",
-    "targetInfo": {
-      "__id__": 185
-    },
-    "propertyPath": [
-      "_lpos"
-    ],
-    "value": {
-      "__type__": "cc.Vec3",
-      "x": -811.747,
-      "y": -236.873,
-      "z": 0
-    }
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "adGxjYLWBHLZAIpCI6Y/6q"
-    ]
-  },
-  {
-    "__type__": "CCPropertyOverrideInfo",
-    "targetInfo": {
-      "__id__": 185
-    },
-    "propertyPath": [
-      "_name"
-    ],
-    "value": "Bullet"
-  },
-  {
-    "__type__": "CCPropertyOverrideInfo",
-    "targetInfo": {
-      "__id__": 185
-    },
-    "propertyPath": [
-      "_lrot"
-    ],
-    "value": {
-      "__type__": "cc.Quat",
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "w": 1
-    }
-  },
-  {
-    "__type__": "CCPropertyOverrideInfo",
-    "targetInfo": {
-      "__id__": 185
-    },
-    "propertyPath": [
-      "_euler"
-    ],
-    "value": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-  },
-  {
     "__type__": "cc.UITransform",
     "_name": "",
     "_objFlags": 0,
@@ -2732,7 +2618,7 @@
     "_enabled": true,
     "__prefab": null,
     "_cameraComponent": {
-      "__id__": 191
+      "__id__": 183
     },
     "_alignCanvasWithScreen": true,
     "_id": "12O/ljcVlEqLmVm3U2gEOQ"
@@ -2847,34 +2733,31 @@
       },
       {
         "__id__": 156
-      },
-      {
-        "__id__": 181
       }
     ]
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 195
+      "__id__": 187
     },
     "shadows": {
-      "__id__": 196
+      "__id__": 188
     },
     "_skybox": {
-      "__id__": 197
+      "__id__": 189
     },
     "fog": {
-      "__id__": 198
+      "__id__": 190
     },
     "octree": {
-      "__id__": 199
+      "__id__": 191
     },
     "skin": {
-      "__id__": 200
+      "__id__": 192
     },
     "lightProbeInfo": {
-      "__id__": 201
+      "__id__": 193
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

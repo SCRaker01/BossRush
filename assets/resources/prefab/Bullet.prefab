@@ -161,6 +161,10 @@
       {
         "__uuid__": "676d64c7-c2ec-4dc8-b908-92bec77eea75",
         "__expectedType__": "cc.AnimationClip"
+      },
+      {
+        "__uuid__": "56a3d983-2af1-497e-a5e9-920e5ad931c0",
+        "__expectedType__": "cc.AnimationClip"
       }
     ],
     "_defaultClip": {
@@ -185,6 +189,8 @@
     "__prefab": {
       "__id__": 9
     },
+    "damage": 10,
+    "speed": 20,
     "_id": ""
   },
   {
@@ -240,7 +246,7 @@
     "tag": 0,
     "_group": 32,
     "_density": 1,
-    "_sensor": false,
+    "_sensor": true,
     "_friction": 0.2,
     "_restitution": 0,
     "_offset": {

@@ -1,8 +1,6 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
-    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, randomRangeInt,
-    Prefab, ERaycast2DType, Node,
-    instantiate,
+    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, ERaycast2DType, 
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
@@ -91,6 +89,8 @@ export class Player extends Component {
 
     update(deltaTime: number) {
         // console.log(this.horizontal);
+
+        
         if(!this.deadStat){
             if(this.isHit){
                 return;
@@ -146,9 +146,8 @@ export class Player extends Component {
     }
 
     spawnBullet(){
-        // if(this.bulletPool.length ==0){
-            this.pool.instatiateBullet();
-        // } 
+        this.pool.node.setPosition(this.node.getPosition());
+        this.pool.shoot(this.directionVal);
     }
    
     //Method Jump
@@ -184,10 +183,6 @@ export class Player extends Component {
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*-2, this.rb.linearVelocity.y);
 
             // this.scheduleOnce(()=>{return;},0.25);
-        }
-
-        if(selfCollider.name == "Bullet" && (otherCollider.name == "Boss"||otherCollider.name == "Wall")){
-            console.log(selfCollider.name);
         }
 
     } 

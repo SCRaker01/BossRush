@@ -158,10 +158,6 @@
     },
     "playerDamage": 50,
     "playerHealth": 1000,
-    "bullet": {
-      "__uuid__": "0798a28b-3d21-4e1d-83b4-3ad5122dd0e7",
-      "__expectedType__": "cc.Prefab"
-    },
     "_id": ""
   },
   {
