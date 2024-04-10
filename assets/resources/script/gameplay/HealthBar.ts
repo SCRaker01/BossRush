@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Label, Node, Prefab,resources,screen, Sprite, SpriteFrame, Vec3 } from 'cc';
+import { _decorator, Component, instantiate, Label, Node, Prefab,resources,screen, Sprite, SpriteFrame, UITransform, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -26,10 +26,16 @@ export class HealthBar extends Component {
     }
     
     update(deltaTime: number) {
-        this.hbHero.setPosition(this.camNode.getPosition().x-screen.windowSize.x/2.75, this.camNode.getPosition().y+screen.windowSize.y/2.75);
+        let canvSize = this.node.getParent().getComponent(UITransform).contentSize.x
+        let hbHeroSize = this.hbHero.getComponent(UITransform).contentSize.x;
+   
+        this.node.getParent().getComponent(UITransform).contentSize.x;
+        this.hbHero.setPosition(this.camNode.getPosition().x- (canvSize/2-hbHeroSize/2), 
+        this.camNode.getPosition().y+ (canvSize/2-hbHeroSize/2));
+
         if(this.hbBoss.active) {
-            this.hbBoss.setPosition(this.camNode.getPosition().x+screen.windowSize.x/2.75, this.camNode.getPosition().y+screen.windowSize.y/2.75);
-            
+            this.hbBoss.setPosition(this.camNode.getPosition().x+
+            (this.node.getParent().getComponent(UITransform).contentSize.x/2), this.camNode.getPosition().y+screen.windowSize.y/2.75);
         }
 
     }
