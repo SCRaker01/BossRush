@@ -5,27 +5,27 @@ import { Bullet } from './Bullet';
 export class Pool extends Component {
    @property({type:Prefab}) private bullet:Prefab;
     
-    private playerPos:Vec3;
+    private bosPos:Vec3;
     private bulletPool: Node[] = [];
     private amountOfBullets:number;
 
 
     start(){
-        this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+        this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
         this.amountOfBullets = 5;
         for(let i =0 ; i < this.amountOfBullets;i++){
             let bulletPref = instantiate(this.bullet);
             this.bulletPool.push(bulletPref);
             
             bulletPref.active = false;           
-            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.playerPos,0);
+            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.bosPos,0);
             bulletPref.setParent(this.node.getParent());
         }
 
     }
 
     update(deltaTime:number){
-        this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+        this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
     }
 
     
@@ -47,7 +47,7 @@ export class Pool extends Component {
         let bullet = this.getPooledObject();
         if(bullet!=null){
             bullet.active = true;
-            bullet.getComponent(Bullet).setSpawnAndDirection(this.playerPos,directionVal);
+            bullet.getComponent(Bullet).setSpawnAndDirection(this.bosPos,directionVal);
             bullet.getComponent(Bullet).animation.play("fly");
             console.log(bullet.getComponent(Bullet).directionVal);
 

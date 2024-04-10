@@ -2,6 +2,7 @@ import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform
         Animation, ERaycast2DType, Graphics, PhysicsSystem2D, randomRangeInt, CCInteger } from 'cc';
 import { Player } from './Player';
 import { HealthBar } from './HealthBar';
+import { Pool } from './Pool';
 
 const { ccclass, property } = _decorator;
 
@@ -11,6 +12,7 @@ export class Boss extends Component {
     /*@property({type:Node})*/ private player:Node;
     @property({type:CCInteger}) private bossHealth:number;
     @property({type:CCInteger}) private bossDamage:number;
+    @property({type:Pool}) private pool:Pool;
   
 
     private rb:RigidBody2D;
@@ -43,7 +45,7 @@ export class Boss extends Component {
         this.stunDur = 1;                                   //Sementar waktu untuk skellHit
         // this.isHit=false;
 
-        this.directionVal = -1;
+        this.directionVal = 1;
         this.canAttack= true;
         this.attackCD = 3;
         this.deadStat = false;
@@ -82,6 +84,10 @@ export class Boss extends Component {
                 this.playAnimation("skellWalk");
                 
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+
+                if(this.canAttack){
+                    this.spawnBullet();
+                }
               
             }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
                
@@ -123,6 +129,18 @@ export class Boss extends Component {
             this.dead();
         }
       
+    }
+
+    spawnBullet(){
+        this.pool.node.setPosition(this.node.getPosition());
+        this.pool.shoot(this.directionVal);
+        this.canAttack=false;
+        this.isAttacking = true;
+
+        this.scheduleOnce(()=>{
+            this.canAttack = true;
+            this.isAttacking = false;
+        },1);
     }
 
     //Method untuk mengecek apakah boss mati atau tidak

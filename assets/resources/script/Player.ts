@@ -5,7 +5,7 @@ import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,inp
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
 import { HealthBar } from './HealthBar';
-import { Pool } from './Pool';
+// import { Pool } from './Pool';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -14,7 +14,7 @@ export class Player extends Component {
     @property({type: CCFloat}) private jumpForce:number;
     @property({type: CCFloat}) private playerDamage:number;
     @property({type: CCFloat}) private playerHealth:number;
-    @property({type:Pool}) private pool:Pool;
+    
     
     private vy :number=0;
     
@@ -145,10 +145,7 @@ export class Player extends Component {
         
     }
 
-    spawnBullet(){
-        this.pool.node.setPosition(this.node.getPosition());
-        this.pool.shoot(this.directionVal);
-    }
+    
    
     //Method Jump
     jump(){
@@ -245,14 +242,19 @@ export class Player extends Component {
                   
                 }
                 break;
-            case KeyCode.KEY_K:
-                this.spawnBullet();
-                break;
+            // case KeyCode.KEY_K:          //Metode menembak player 
+            //     this.spawnBullet();
+            //     break;
             case KeyCode.SHIFT_RIGHT:
                 if(Math.abs(this.horizontal)==1)this.horizontal*=2;
                 break;
         }
     }
+
+    // spawnBullet(){
+    //     this.pool.node.setPosition(this.node.getPosition());
+    //     this.pool.shoot(this.directionVal);
+    // }
 
     //Method untuk ketika melepas keycaps 
     keyUp(event:EventKeyboard){
@@ -323,20 +325,23 @@ export class Player extends Component {
 
     //Method menerima serangan dari musuh/boss
     receiveAttackFromBoss(damage:number){
-        this.isHit=true;
-        this.playerHealth-=damage;
-        console.log("boss damage :"+damage);
-        console.log("player health : "+this.playerHealth);
+        if(!this.isRolling){
 
-        this.playAnimation("heroHurt");
-        this.heatlthBar.updateHealth("Player",this.playerHealth);
-        if (this.isDead()) {    
-            this.dead();
+            this.isHit=true;
+            this.playerHealth-=damage;
+            console.log("boss damage :"+damage);
+            console.log("player health : "+this.playerHealth);
+    
+            this.playAnimation("heroHurt");
+            this.heatlthBar.updateHealth("Player",this.playerHealth);
+            if (this.isDead()) {    
+                this.dead();
+            }
+            
+            this.scheduleOnce(()=>{
+                this.isHit=false;
+            },0.25);
         }
-        
-        this.scheduleOnce(()=>{
-            this.isHit=false;
-        },0.25);
        
     }
 
