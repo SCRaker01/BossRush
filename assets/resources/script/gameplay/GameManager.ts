@@ -1,5 +1,8 @@
-import { _decorator, Button, Component,director,Node,  UITransform,  Vec3 } from 'cc';
+import { _decorator, Button, Component,director,Label,Node,  UITransform,  Vec3 } from 'cc';
 import { HealthBar } from './HealthBar';
+import { scoreManager } from '../endScreen/scoreManager';
+import { Boss } from './Boss';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameManager')
@@ -12,23 +15,51 @@ export class GameManager extends Component {
     @property({type:HealthBar}) hb:HealthBar;
     @property({type:Node}) pScreen:Node;
     @property({type:Button}) pButton:Button;
+    @property({type:Label}) private stopWatchLabel:Label;
+    @property({type:scoreManager}) private sManager:scoreManager;
 
     private playerPos:Vec3;
+    private bossComp: Boss;
 
     onLoad(){
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
+        this.bossComp = this.boss.getComponent(Boss);
+        if(staticData.diff_Level == 2){
+            this.bossComp.setMultiplier(1.5);
+        }
+        else if (staticData.diff_Level ==3){
+            this.bossComp.setMultiplier(2);
+        }
+        // director.preloadScene("endScreen");
+        
     }
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
+
+        
         if(this.playerPos.x>=-1280 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
-
+            
         }
         this.pButton.node.setPosition(new Vec3(this.camera.getPosition().x,this.pButton.node.getPosition().y,0));
         this.pScreen.setPosition(new Vec3(this.camera.getPosition().x,0,0));
-    
+        this.stopWatchLabel.node.setPosition(new Vec3(this.camera.getPosition().x,this.stopWatchLabel.node.getPosition().y,0));
+       
+        // console.log(this.playerPos.x)
+
+        if(!this.sManager.getTimer() && this.playerPos.x>-640){
+            this.sManager.activateTime();
+            this.bossComp.activateBoss();
+        }
+
+        if(this.bossComp.isDead()){
+            this.sManager.deactivateGame();
+            staticData.score = this.sManager.getScore();
+            this.pButton.node.active = false;
+            director.loadScene("endScreen");
+        }
     }
 
     pause(){
@@ -42,7 +73,7 @@ export class GameManager extends Component {
     }
 
     exitToStart(){
-
+        director.loadScene("startScreen");
     }
 }
 

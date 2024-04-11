@@ -28,14 +28,15 @@ export class HealthBar extends Component {
     update(deltaTime: number) {
         let canvSize = this.node.getParent().getComponent(UITransform).contentSize.x
         let hbHeroSize = this.hbHero.getComponent(UITransform).contentSize.x;
+        let hbBossSize = this.hbBoss.getComponent(UITransform).contentSize.x;
    
         this.node.getParent().getComponent(UITransform).contentSize.x;
-        this.hbHero.setPosition(this.camNode.getPosition().x- (canvSize/2-hbHeroSize/2), 
-        this.camNode.getPosition().y+ (canvSize/2-hbHeroSize/2));
+        this.hbHero.setPosition(this.camNode.getPosition().x-(canvSize/2.5), 
+                                this.camNode.getPosition().y+ (canvSize/2.5-hbHeroSize/1.25));
 
         if(this.hbBoss.active) {
-            this.hbBoss.setPosition(this.camNode.getPosition().x+
-            (this.node.getParent().getComponent(UITransform).contentSize.x/2), this.camNode.getPosition().y+screen.windowSize.y/2.75);
+            this.hbBoss.setPosition(this.camNode.getPosition().x+(canvSize/2.5), 
+                                    this.camNode.getPosition().y+(canvSize/2.5-hbHeroSize/1.25))
         }
 
     }

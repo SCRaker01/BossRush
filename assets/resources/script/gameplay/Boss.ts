@@ -35,6 +35,9 @@ export class Boss extends Component {
     private isAttacking:boolean;
 
     private attackAnimNum;
+    private startStat:boolean;  //ambil dari gameManager -> scoreManager (mulai masuk area + mulai gamenya)
+
+    private multiplier:number;
 
 
     onLoad(){
@@ -52,8 +55,11 @@ export class Boss extends Component {
         this.attackCD = 3;
         this.deadStat = false;
         this.isAttacking = false;
+        this.startStat = false;
+
     }
 
+    
     start() {
         this.horizontal = 0;
         this.attackAnimNum=-1;
@@ -68,7 +74,7 @@ export class Boss extends Component {
         let bossPosX = this.node.getPosition().x;
         
         //Boss tidak sedang menyerang atau mati
-        if(!this.deadStat && !this.isAttacking){
+        if(this.startStat&&!this.deadStat && !this.isAttacking){
             if(playerPosX < bossPosX) {         //Player disebelah kiri boss
                 this.horizontal = -0.5;
                 if(!this.isFacingRight) this.flip();
@@ -106,6 +112,15 @@ export class Boss extends Component {
         }
         // console.log(this.curClipName);
 
+    }
+
+    setMultiplier(mult:number){
+        this.bossDamage*=mult;
+        this.bossHealth*=mult;
+    }
+
+    activateBoss(){
+        this.startStat = true;
     }
 
     //Method untuk memainkan animasi
@@ -162,7 +177,9 @@ export class Boss extends Component {
     //Method yang dimainkan ketika boss mati
     dead(){
         this.playAnimation("skellDie");
-        this.scheduleOnce(()=>{this.node.active=false;},this.stunDur);
+        this.scheduleOnce(()=>{
+            this.node.active=false;
+        },this.stunDur);
     }
 
     //Method serangan dari boss dengan menggunakan raycast
