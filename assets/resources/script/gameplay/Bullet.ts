@@ -3,6 +3,7 @@ import { _decorator, CircleCollider2D, Collider2D, Component, Contact2DType,
     CCFloat} from 'cc';
 import { Boss } from './Boss';
 import { Player } from './Player';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 
@@ -32,6 +33,13 @@ export class Bullet extends Component { private boss:Boss;
         
         this.speed = 10;
         this.statusCrashing = false;
+
+        if(staticData.diff_Level==2){
+            this.damage *=2;
+        }
+        else if(staticData.diff_Level==3){
+            this.damage *=2.5;
+        }
         
     }
     

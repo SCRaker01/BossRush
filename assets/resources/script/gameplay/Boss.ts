@@ -63,7 +63,7 @@ export class Boss extends Component {
     start() {
         this.horizontal = 0;
         this.attackAnimNum=-1;
-        this.speed = 4;
+        this.speed = 6;
 
         this.heatlthBar = this.node.getParent().getChildByName("HealthContainer").getComponent(HealthBar);
         this.heatlthBar.setEnemyBaseHealth(this.bossHealth);
@@ -143,7 +143,7 @@ export class Boss extends Component {
 
         this.heatlthBar.updateHealth("Boss",this.bossHealth);
 
-        this.playAnimation("skellHurt");
+        this.bossAnim.play("skellHurt");
 
         if (this.isDead()) {    
             this.dead();
@@ -201,7 +201,7 @@ export class Boss extends Component {
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{
             for(let i =0 ;i< 3;i++){
-                let p1 = new Vec2(this.node.worldPosition.x, 77+(i*15));
+                let p1 = new Vec2(this.node.worldPosition.x-(75*this.directionVal), 77+(i*15));
                 let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 77+(i*45));
                 let mask = 0xffffffff;
          

@@ -1,6 +1,6 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
-    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, ERaycast2DType, 
+    PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, ERaycast2DType,
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
@@ -198,15 +198,16 @@ export class Player extends Component {
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
-                if(this.isFacingRight && !this.isWallSliding){
+                if(this.isFacingRight){
                     this.flip();
                 }
+
                 this.horizontal=1;
 
                 break;
             case KeyCode.ARROW_LEFT:
             case KeyCode.KEY_A:
-                if(!this.isFacingRight && !this.isWallSliding){
+                if(!this.isFacingRight){
                     this.flip();
                 }
                 this.horizontal=-1;
@@ -354,7 +355,7 @@ export class Player extends Component {
     //----------------------------------------------------------------
     //Method ketika player mati
     dead(){
-        this.deadStat = true
+    
         this.playAnimation("heroDeath");
     }    
 }

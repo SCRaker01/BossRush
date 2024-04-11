@@ -1,4 +1,4 @@
-import { _decorator, Component, director, Label, math, Node, UIRenderer } from 'cc';
+import { _decorator, Component, director, Label, math, Node, UIRenderer, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
 import { staticData } from '../other/staticData';
@@ -7,6 +7,10 @@ export class endManager extends Component {
     @property({type:Label}) private bestScore:Label;
     @property({type:Label}) private currScore:Label;
     @property({type:Label}) private level:Label;
+
+    @property({type:Node}) private groupButton;
+    @property({type:Node}) private succScreen;
+    @property({type:Node}) private failedScreen;
      // @property({type:scoreManager}) private scoreManager;
 
     onLoad(){
@@ -14,6 +18,7 @@ export class endManager extends Component {
     }
 
     multiplyScore(){
+    
         this.scoreCalc(staticData.diff_Level);
         if(staticData.diff_Level == 1){
             this.level.string = "easy";
@@ -41,7 +46,17 @@ export class endManager extends Component {
     }
 
     start(){
-        this.multiplyScore();
+        this.succScreen.active = false;
+        this.failedScreen.active = false;
+        
+        if(staticData.isGameBeaten){
+            this.succScreen.active = true;
+            this.multiplyScore();
+            this.groupButton.setPosition(new Vec3(0,-20,0));
+        }else {
+            this.failedScreen.active = true;
+            this.groupButton.setPosition(new Vec3(0,60,0));
+        }
     }
     replay(){
         director.loadScene("gameplay");
