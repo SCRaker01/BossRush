@@ -6,12 +6,14 @@ export class Pool extends Component {
    @property({type:Prefab}) private bullet:Prefab;
     
     private bosPos:Vec3;
+    private playerPos:Vec3;
     private bulletPool: Node[] = [];
     private amountOfBullets:number;
 
 
     start(){
         this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
+        this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
         this.amountOfBullets = 5;
         for(let i =0 ; i < this.amountOfBullets;i++){
             let bulletPref = instantiate(this.bullet);
@@ -26,6 +28,7 @@ export class Pool extends Component {
 
     update(deltaTime:number){
         this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
+        this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
     }
 
     
@@ -48,8 +51,9 @@ export class Pool extends Component {
         if(bullet!=null){
             bullet.active = true;
             bullet.getComponent(Bullet).setSpawnAndDirection(this.bosPos,directionVal);
+            bullet.getComponent(Bullet).setYDistance(this.playerPos.y);
             bullet.getComponent(Bullet).animation.play("fly");
-            console.log(bullet.getComponent(Bullet).directionVal);
+            // console.log(bullet.getComponent(Bullet).directionVal);
 
         }
     }

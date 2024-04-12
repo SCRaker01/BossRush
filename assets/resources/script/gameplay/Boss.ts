@@ -102,9 +102,19 @@ export class Boss extends Component {
             }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
                 
                 this.playAnimation("skellIdle");
+
                 
-                if(this.canAttack){
-                    this.attack();
+                if (this.player.getPosition().y < 
+                        this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y-this.player.getComponent(UITransform).contentSize.y){
+                    // console.log(this.player.getPosition().y);
+                    // console.log(this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y);
+                    if(this.canAttack){
+                        this.attack();
+                    }
+                }else {
+                    if (this.canAttack){
+                        this.spawnBullet();
+                    }
                 }
             }
             

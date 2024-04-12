@@ -136,7 +136,7 @@ export class Player extends Component {
     
             //Terjun setelah lompat
             if (!this.isOnGround && this.rb.linearVelocity.y<0){
-                
+                console.log(this.isOnGround);
                 this.playAnimation("heroFall");
             }
             // console.log(this.rb.linearVelocity);

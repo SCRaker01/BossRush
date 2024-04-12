@@ -1,4 +1,4 @@
-import { _decorator, Button, Component,director,Label,Node,  UITransform,  Vec3 } from 'cc';
+import { _decorator, BoxCollider2D, Button, Component,director,Label,Node,  UITransform,  Vec3,Animation } from 'cc';
 import { Boss } from './Boss';
 import { HealthBar } from './HealthBar';
 import { scoreManager } from '../endScreen/scoreManager';
@@ -13,6 +13,7 @@ export class GameManager extends Component {
     @property({type:Node}) canvas:Node;
     @property({type:Node}) player:Node;
     @property({type:Node}) boss:Node;
+    @property({type:Node}) door:Node;
 
     @property({type:HealthBar}) hb:HealthBar;
     @property({type:Node}) pScreen:Node;
@@ -37,7 +38,7 @@ export class GameManager extends Component {
             this.bossComp.setMultiplier(2);
         }
         // director.preloadScene("endScreen");
-        
+        this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
     }
     
     update(deltaTime: number) {
@@ -55,9 +56,11 @@ export class GameManager extends Component {
        
         // console.log(this.playerPos.x)
 
-        if(!this.sManager.getTimer() && this.playerPos.x>-640){
+        if(!this.sManager.getTimer() && this.playerPos.x>-635){
             this.sManager.activateTime();
             this.bossComp.activateBoss();
+            this.door.getComponent(BoxCollider2D).enabled = true;
+            this.door.getComponent(Animation).play("doorOpen");
         }
 
         if(this.bossComp.isDead()){
