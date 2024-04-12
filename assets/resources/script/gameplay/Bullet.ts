@@ -45,7 +45,7 @@ export class Bullet extends Component { private boss:Boss;
     }
     
     setSpawnAndDirection(pos:Vec3,direction:number){
-        this.node.setPosition(pos.x+(this.directionVal+66), pos.y);
+        this.node.setPosition(pos.x+(-this.directionVal*(66)), pos.y);
         this.directionVal = direction;
         this.statusCrashing = false;
     }
@@ -77,15 +77,23 @@ export class Bullet extends Component { private boss:Boss;
         // console.log(rotateAmount);
         console.log(this.rb.linearVelocity.y);
         this.rb.angularVelocity = -rotateAmount * 200;
-        
+
+
+
+
         // console.log(this.rb.angularVelocity);
         this.node.setRotationFromEuler(new Vec3(0,45,0));
 
         
         if(!this.statusCrashing){
-            this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, this.rb.linearVelocity.y);
+            if(staticData.diff_Level== 3) {
+                this.rb.linearVelocity = new Vec2(this.speed*dir.x, this.speed*dir.y);
+            } 
+            else {
+                this.rb.linearVelocity = new Vec2(this.speed*this.directionVal, this.rb.linearVelocity.y); 
+            }
 
-        }
+        } 
         
     }
 

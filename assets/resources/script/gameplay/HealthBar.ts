@@ -24,19 +24,23 @@ export class HealthBar extends Component {
         this.restartHB();
         
     }
+
+    start(){
+
+    }
     
     update(deltaTime: number) {
         let canvSize = this.node.getParent().getComponent(UITransform).contentSize.x
         let hbHeroSize = this.hbHero.getComponent(UITransform).contentSize.x;
-        let hbBossSize = this.hbBoss.getComponent(UITransform).contentSize.x;
+  
    
         this.node.getParent().getComponent(UITransform).contentSize.x;
         this.hbHero.setPosition(this.camNode.getPosition().x-(canvSize/2.5), 
-                                this.camNode.getPosition().y+ (canvSize/2.5-hbHeroSize/1.25));
+                                this.camNode.getPosition().y+ (canvSize/2.5-hbHeroSize/1.25)-5);
 
         if(this.hbBoss.active) {
             this.hbBoss.setPosition(this.camNode.getPosition().x+(canvSize/2.5), 
-                                    this.camNode.getPosition().y+(canvSize/2.5-hbHeroSize/1.25))
+                                    this.camNode.getPosition().y+(canvSize/2.5-hbHeroSize/1.25)-5)
         }
 
     }
@@ -48,6 +52,8 @@ export class HealthBar extends Component {
             sprite.spriteFrame = spriteFrame;
         });
         this.node.addChild(this.hbHero);
+
+        
     }
 
     instatiateBossIcon(){
@@ -65,6 +71,8 @@ export class HealthBar extends Component {
         this.hbBoss.getChildByName("Icon").setScale(new Vec3(this.hbBoss.getChildByName("Icon").getScale().x,1,1));
         this.hbBoss.getChildByName("Bar").setScale(new Vec3(this.hbBoss.getChildByName("Bar").getScale().x*-1,1,1));
         this.node.addChild(this.hbBoss);
+
+        
 
     }
 
@@ -90,10 +98,12 @@ export class HealthBar extends Component {
 
     setPlayerBaseHealth(baseHealth: number){
         this.basePlayerHeatlh = baseHealth;
+        this.updateHeroHB(this.basePlayerHeatlh,this.basePlayerHeatlh);
     }
 
     setEnemyBaseHealth(baseHealth: number){
         this.baseEnemyHeatlh = baseHealth;
+        this.updateBossHB(this.baseEnemyHeatlh,this.baseEnemyHeatlh);
     }
 
     updateHealth(name:String, currHealth:number){
@@ -101,7 +111,7 @@ export class HealthBar extends Component {
         if(name=="Player"){
             percHealth = currHealth/this.basePlayerHeatlh;
             if(percHealth*100 > 0){
-                this.updateHeroHB(percHealth);
+                this.updateHeroHB(percHealth,currHealth);
             } else{
                 this.hbHero.active =false
             }
@@ -109,7 +119,7 @@ export class HealthBar extends Component {
             percHealth = currHealth/this.baseEnemyHeatlh;
             // console.log(percHealth);
             if(percHealth*100 > 0){
-                this.updateBossHB(percHealth);
+                this.updateBossHB(percHealth,currHealth);
             } else{
                 this.hbBoss.active =false
             }
@@ -117,16 +127,16 @@ export class HealthBar extends Component {
         
     }
 
-    updateBossHB(percHealth:number){
+    updateBossHB(percHealth:number, realHealth:number){
         let bossBar = this.hbBoss.getChildByName("Bar"); 
         bossBar.getComponent(Sprite).fillRange = percHealth;
-        bossBar.getChildByName("Label").getComponent(Label).string = (percHealth*100) +"%";
+        bossBar.getChildByName("Label").getComponent(Label).string = realHealth+"/"+this.baseEnemyHeatlh;
     }
 
-    updateHeroHB(percHealth:number){
+    updateHeroHB(percHealth:number,realHealth:number){
         let heroBar = this.hbHero.getChildByName("Bar"); 
         heroBar.getComponent(Sprite).fillRange = percHealth;
-        heroBar.getChildByName("Label").getComponent(Label).string = (percHealth*100) +"%";
+        heroBar.getChildByName("Label").getComponent(Label).string =  realHealth+"/"+this.basePlayerHeatlh;
     }
 
 

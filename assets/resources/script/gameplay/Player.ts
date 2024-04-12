@@ -357,6 +357,9 @@ export class Player extends Component {
     dead(){
     
         this.playAnimation("heroDeath");
+        this.scheduleOnce(()=>{
+            this.node.active=false;
+        },1);
     }    
 }
 

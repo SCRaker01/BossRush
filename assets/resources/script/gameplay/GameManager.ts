@@ -43,7 +43,7 @@ export class GameManager extends Component {
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
-
+        console.log(staticData.diff_Level);
         
         if(this.playerPos.x>=-1280 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
@@ -68,13 +68,18 @@ export class GameManager extends Component {
             staticData.score = this.sManager.getScore();
             staticData.isGameBeaten = true;
             this.pButton.node.active = false;
-            director.loadScene("endScreen");
+            this.scheduleOnce(()=>{
+                director.loadScene("endScreen");
+            },2.5);
+            
         }
         
         if(this.playerComp.isDead()){
             this.sManager.deactivateGame();
             staticData.isGameBeaten = false;
-            director.loadScene("endScreen");
+            this.scheduleOnce(()=>{
+                director.loadScene("endScreen");
+            },1);
         }
     }
 

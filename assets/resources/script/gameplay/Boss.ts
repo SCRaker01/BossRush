@@ -93,19 +93,19 @@ export class Boss extends Component {
                 if(this.canAttack){
                     this.spawnBullet();
                 } else {
-
+                    
                     this.playAnimation("skellWalk");
                 }
                 
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-            
+                
             }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
                 
                 this.playAnimation("skellIdle");
-
+                
                 
                 if (this.player.getPosition().y < 
-                        this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y-this.player.getComponent(UITransform).contentSize.y){
+                this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y-this.player.getComponent(UITransform).contentSize.y){
                     // console.log(this.player.getPosition().y);
                     // console.log(this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y);
                     if(this.canAttack){
@@ -113,6 +113,7 @@ export class Boss extends Component {
                     }
                 }else {
                     if (this.canAttack){
+                       
                         this.spawnBullet();
                     }
                 }
@@ -162,16 +163,20 @@ export class Boss extends Component {
     }
 
     spawnBullet(){
-        this.pool.node.setPosition(this.node.getPosition());
-        this.pool.shoot(this.directionVal);
+        
         this.canAttack=false;
-        // this.isAttacking = true;
-        // this.playAnimation("skellIdle");
-
+        this.bossAnim.play("skellMagick");
+        this.scheduleOnce(()=>{
+            
+            this.pool.node.setPosition(this.node.getPosition());
+            this.pool.shoot(this.directionVal);
+            
+        },1);
+    
         this.scheduleOnce(()=>{
             this.canAttack = true;
             
-        },2);
+        },1.5);
     }
 
     //Method untuk mengecek apakah boss mati atau tidak
