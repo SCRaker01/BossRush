@@ -75,7 +75,7 @@ export class Bullet extends Component { private boss:Boss;
 
         
         // console.log(rotateAmount);
-        console.log(this.rb.linearVelocity.y);
+        // console.log(this.rb.linearVelocity.y);
         this.rb.angularVelocity = -rotateAmount * 200;
 
 

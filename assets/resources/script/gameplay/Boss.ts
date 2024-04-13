@@ -3,6 +3,7 @@ import { _decorator, CircleCollider2D, Component, Node, RigidBody2D, UITransform
 import { Player } from './Player';
 import { HealthBar } from './HealthBar';
 import { Pool } from './Pool';
+import { AudioManager } from '../other/AudioManager';
 
 const { ccclass, property } = _decorator;
 
@@ -13,6 +14,7 @@ export class Boss extends Component {
     @property({type:CCInteger}) private bossHealth:number;
     @property({type:CCInteger}) private bossDamage:number;
     @property({type:Pool}) private pool:Pool;
+    @property({type:AudioManager}) private audio:AudioManager;
   
 
     private rb:RigidBody2D;
@@ -144,13 +146,15 @@ export class Boss extends Component {
 
     //Method untuk menerima serangan dari player
     receiveAttackFromPlayer(damage:number){
+
+        this.audio.onAudioQueue(6);
         // this.isHit=true;
         this.heatlthBar.showEnemyHB();
         this.bossHealth-=damage;
 
         // console.log(this.bossHealth);
-        console.log("boss damage :"+damage);
-        console.log("player health : "+this.bossHealth);
+        // console.log("boss damage :"+damage);
+        // console.log("player health : "+this.bossHealth);
 
         this.heatlthBar.updateHealth("Boss",this.bossHealth);
 
@@ -169,6 +173,7 @@ export class Boss extends Component {
         this.scheduleOnce(()=>{
             
             this.pool.node.setPosition(this.node.getPosition());
+            this.audio.onAudioQueue(4);
             this.pool.shoot(this.directionVal);
             
         },1);
@@ -191,6 +196,7 @@ export class Boss extends Component {
 
     //Method yang dimainkan ketika boss mati
     dead(){
+        this.audio.onAudioQueue(6);
         this.playAnimation("skellDie");
         this.scheduleOnce(()=>{
             this.node.active=false;
@@ -211,7 +217,7 @@ export class Boss extends Component {
         }
   
         this.canAttack = false;
-
+        this.audio.onAudioQueue(5);
                                             // Serangan dilakukan setelah animasi selesai
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{

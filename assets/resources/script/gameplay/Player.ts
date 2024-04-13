@@ -5,6 +5,7 @@ import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,inp
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
 import { HealthBar } from './HealthBar';
+import { AudioManager } from '../other/AudioManager';
 // import { Pool } from './Pool';
 const { ccclass, property } = _decorator;
 
@@ -14,6 +15,7 @@ export class Player extends Component {
     @property({type: CCFloat}) private jumpForce:number;
     @property({type: CCFloat}) private playerDamage:number;
     @property({type: CCFloat}) private playerHealth:number;
+    @property({type:AudioManager}) private audio :AudioManager;
     
     
     private vy :number=0;
@@ -136,7 +138,7 @@ export class Player extends Component {
     
             //Terjun setelah lompat
             if (!this.isOnGround && this.rb.linearVelocity.y<0){
-                console.log(this.isOnGround);
+                // console.log(this.isOnGround);
                 this.playAnimation("heroFall");
             }
             // console.log(this.rb.linearVelocity);
@@ -149,6 +151,7 @@ export class Player extends Component {
    
     //Method Jump
     jump(){
+        this.audio.onAudioQueue(9);
         this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
         this.isJumping=false;
         this.isOnGround=false;
@@ -173,6 +176,7 @@ export class Player extends Component {
             this.isOnGround = true;
             this.canDoubleJump=false;
             this.isWallSliding=false;
+            this.audio.onAudioQueue(8);
         }
         if(otherCollider.tag==0){               //Boss
             // this.knockback();
@@ -291,8 +295,8 @@ export class Player extends Component {
         let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
 
         if(results){
-            console.log(results);
-            console.log(results[0]);
+            // console.log(results);
+            // console.log(results[0]);
             if(results[0] != null && results[0].collider.tag ==0) {
                 results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
             }
@@ -301,7 +305,7 @@ export class Player extends Component {
 
         //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;
-
+        this.audio.onAudioQueue(5);
         this.attackAnimNum++;
         if(this.attackAnimNum%3==0){
             this.playerAnim.play("heroAttack1");
@@ -327,8 +331,8 @@ export class Player extends Component {
 
             this.isHit=true;
             this.playerHealth-=damage;
-            console.log("boss damage :"+damage);
-            console.log("player health : "+this.playerHealth);
+            // console.log("boss damage :"+damage);
+            // console.log("player health : "+this.playerHealth);
     
             this.playAnimation("heroHurt");
             this.heatlthBar.updateHealth("Player",this.playerHealth);
@@ -355,8 +359,9 @@ export class Player extends Component {
     //----------------------------------------------------------------
     //Method ketika player mati
     dead(){
-    
+        this.audio.onAudioQueue(7);
         this.playAnimation("heroDeath");
+        
         this.scheduleOnce(()=>{
             this.node.active=false;
         },1);

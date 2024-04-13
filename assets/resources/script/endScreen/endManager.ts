@@ -2,6 +2,7 @@ import { _decorator, Component, director, Label, math, Node, UIRenderer, Vec3 } 
 
 const { ccclass, property } = _decorator;
 import { staticData } from '../other/staticData';
+import { AudioManager } from '../other/AudioManager';
 @ccclass('endManager')
 export class endManager extends Component {
     @property({type:Label}) private bestScore:Label;
@@ -11,6 +12,7 @@ export class endManager extends Component {
     @property({type:Node}) private groupButton;
     @property({type:Node}) private succScreen;
     @property({type:Node}) private failedScreen;
+    @property({type:AudioManager}) private audio:AudioManager;
      // @property({type:scoreManager}) private scoreManager;
 
     onLoad(){
@@ -21,7 +23,7 @@ export class endManager extends Component {
     
         this.scoreCalc(staticData.diff_Level);
         if(staticData.diff_Level == 1){
-            this.level.string = "easy";
+            this.level.string = "Easy";
             this.level.color.set(87,241,0,255);
         }
         else if(staticData.diff_Level == 2){     
@@ -50,19 +52,23 @@ export class endManager extends Component {
         this.failedScreen.active = false;
         
         if(staticData.isGameBeaten){
+            this.audio.onAudioQueue(2);
             this.succScreen.active = true;
             this.multiplyScore();
             this.groupButton.setPosition(new Vec3(0,-20,0));
         }else {
+            this.audio.onAudioQueue(1);
             this.failedScreen.active = true;
             this.groupButton.setPosition(new Vec3(0,60,0));
         }
     }
     replay(){
+        this.audio.onAudioQueue(0);
         director.loadScene("gameplay");
     }
-
+    
     backToStart(){
+        this.audio.onAudioQueue(0);
         director.loadScene("startScreen");
     }
 

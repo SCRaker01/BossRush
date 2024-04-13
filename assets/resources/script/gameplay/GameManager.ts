@@ -4,6 +4,7 @@ import { HealthBar } from './HealthBar';
 import { scoreManager } from '../endScreen/scoreManager';
 import { Player } from './Player';
 import { staticData } from '../other/staticData';
+import { AudioManager } from '../other/AudioManager';
 
 const { ccclass, property } = _decorator;
 
@@ -20,12 +21,16 @@ export class GameManager extends Component {
     @property({type:Button}) pButton:Button;
     @property({type:Label}) private stopWatchLabel:Label;
     @property({type:scoreManager}) private sManager:scoreManager;
+    @property({type:AudioManager}) private audio :AudioManager;
 
     private playerPos:Vec3;
     private bossComp: Boss;
     private playerComp: Player;
+  
 
     onLoad(){
+        
+        // this.audio.onAudioQueue(0);
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
         this.bossComp = this.boss.getComponent(Boss);
@@ -39,13 +44,19 @@ export class GameManager extends Component {
         }
         // director.preloadScene("endScreen");
         this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
+
+        this.scheduleOnce(()=>{
+            this.door.getComponent(Animation).play("doorOpen");
+            this.audio.onAudioQueue(3);
+        },1)
+      
     }
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
-        console.log(staticData.diff_Level);
+        // console.log(staticData.diff_Level);
         
-        if(this.playerPos.x>=-1280 && this.playerPos.x<=640){
+        if( this.playerPos.x>=-1280 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
             
         }
@@ -60,7 +71,8 @@ export class GameManager extends Component {
             this.sManager.activateTime();
             this.bossComp.activateBoss();
             this.door.getComponent(BoxCollider2D).enabled = true;
-            this.door.getComponent(Animation).play("doorOpen");
+            this.door.getComponent(Animation).play("doorClose");
+            this.audio.onAudioQueue(4);
         }
 
         if(this.bossComp.isDead()){
@@ -83,17 +95,21 @@ export class GameManager extends Component {
         }
     }
 
+
     pause(){
+        this.audio.onAudioQueue(1);
         director.pause();
         this.pScreen.active = true;
     }
-
+    
     continue(){
+        this.audio.onAudioQueue(1);
         director.resume();
         this.pScreen.active = false;
     }
-
+    
     exitToStart(){
+        this.audio.onAudioQueue(1);
         director.loadScene("startScreen");
     }
 }

@@ -53,7 +53,8 @@ export class testMovement extends Component {
         let movement = speedDif * accelRate;
         
         // console.log(targetSpeed+" "+accelRate+" "+speedDif+" " +movement);
-        this.rb.linearVelocity = new Vec2(movement* (this.rb.linearVelocity.x+(PhysicsSystem2D.instance.fixedTimeStep*speedDif*accelRate))/this.rb.getMass(),
+        this.rb.linearVelocity = new Vec2(movement* (this.rb.linearVelocity.x+
+            (PhysicsSystem2D.instance.fixedTimeStep*speedDif*accelRate))/this.rb.getMass(),
                     this.rb.linearVelocity.y);
         // console.log(this.rb.getMass() );
         console.log(this.rb.linearVelocity.x);

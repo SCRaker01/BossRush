@@ -5,12 +5,10 @@ const { ccclass, property } = _decorator;
 export class scoreManager extends Component {
     @property({type:Label}) private stopWatchLabel:Label; 
 
-    private totalScore: number;
     private score: number;
     private timer:number;
     private startStatus:boolean;
     private gameEnd:boolean;
-    private multiplier:number;
     
     
     start() {
@@ -27,6 +25,7 @@ export class scoreManager extends Component {
     reset(){
         this.timer=0;
         // console.log(this.stopWatchLabel.node.name);
+        
         if(this.stopWatchLabel.node.name == "Timer"){
             this.score=0;
         }
