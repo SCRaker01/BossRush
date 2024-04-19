@@ -19,6 +19,7 @@ export class endManager extends Component {
         director.preloadScene("gameplay");
     }
 
+    //Multiply sesuai difficulty level
     multiplyScore(){
     
         this.scoreCalc(staticData.diff_Level);
@@ -42,6 +43,7 @@ export class endManager extends Component {
         this.setScore();
     }
 
+    //Method menghitung total score
     scoreCalc(diff_Level: number){
         let baseNumber = 100;
         staticData.score = (baseNumber-staticData.score) + Math.floor((staticData.score*(Math.PI*diff_Level)));
@@ -51,29 +53,32 @@ export class endManager extends Component {
         this.succScreen.active = false;
         this.failedScreen.active = false;
         
-        if(staticData.isGameBeaten){
+        if(staticData.isGameBeaten){    //Jika menang
             this.audio.onAudioQueue(2);
             this.succScreen.active = true;
             this.multiplyScore();
             this.groupButton.setPosition(new Vec3(0,-20,0));
-        }else {
+        }else {                         //Jika kalah
             this.audio.onAudioQueue(1);
             this.failedScreen.active = true;
             this.groupButton.setPosition(new Vec3(0,60,0));
         }
     }
+
+    //Method untuk mengulangi langsung stage dengan difficulty level yang sama
     replay(){
         this.audio.onAudioQueue(0);
         director.loadScene("gameplay");
     }
     
+    //Method untuk button kembalik ke start screen
     backToStart(){
         this.audio.onAudioQueue(0);
         director.loadScene("startScreen");
     }
 
+    //Method untuk label score
     setScore(){
-        // this.score.string = this.scoreManager.getScore()+"";
         this.bestScore.string = staticData.bestScore+"";
         this.currScore.string = staticData.score+"";
     }

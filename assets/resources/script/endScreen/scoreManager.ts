@@ -22,9 +22,9 @@ export class scoreManager extends Component {
         }
     }
 
+    //Reset semuanya
     reset(){
         this.timer=0;
-        // console.log(this.stopWatchLabel.node.name);
         
         if(this.stopWatchLabel.node.name == "Timer"){
             this.score=0;
@@ -34,23 +34,28 @@ export class scoreManager extends Component {
         this.gameEnd = false;
     }
 
+    //Ketika game sudah selesai, matikan timer scoremanager
     deactivateGame(){
         this.gameEnd = true;
     }
 
+    //Nyalakan score manager
     activateTime(){
         this.startStatus = true;
     }
 
-    getTimer():boolean{
+    //Mengembalikan start status dari timer
+    getStartStatus():boolean{
         return this.startStatus;
     }
 
+    //Naikkan score dan update label
     increment(){
         this.score++;
         this.stopWatchLabel.string = this.score+"";
     }
 
+    //Kembalikan nilai score
     getScore(){
         return this.score;
     }

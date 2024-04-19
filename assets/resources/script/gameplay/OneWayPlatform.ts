@@ -22,27 +22,25 @@ export class OneWayPlatform extends Component {
         let worldManifold = contact.getWorldManifold();
         let points = worldManifold.points;
 
-        //check if contact points are moving into platform
+        
         for (let i = 0; i < points.length; i++) {
             platformBody.getLinearVelocityFromWorldPoint(points[i], pointVelPlatform);
             otherBody.getLinearVelocityFromWorldPoint(points[i], pointVelOther);
             platformBody.getLocalVector(pointVelOther.subtract(pointVelPlatform), relativeVel);
 
-            if (relativeVel.y < -1 * PHYSICS_2D_PTM_RATIO) //if moving down faster than PHYSICS_2D_PTM_RATIO pixel/s (1m/s), handle as before
-                return;  //point is moving into platform, leave contact solid and exit
-            else if (relativeVel.y < 1 * PHYSICS_2D_PTM_RATIO) { //if moving slower than PHYSICS_2D_PTM_RATIO pixel/s (1m/s)
-                //borderline case, moving only slightly out of platform
+            if (relativeVel.y < -1 * PHYSICS_2D_PTM_RATIO) 
+                return; 
+            else if (relativeVel.y < 1 * PHYSICS_2D_PTM_RATIO) {
+                
                 platformBody.getLocalPoint(points[i], relativePoint);
-                let platformFaceY = selfCollider.worldAABB.height / 2;  //front of platform, should only used on a box collider
+                let platformFaceY = selfCollider.worldAABB.height / 2; 
                 if (relativePoint.y > platformFaceY - 0.1 * PHYSICS_2D_PTM_RATIO)
-                    return;  //contact point is less than 3.2pixel (10cm) inside front face of platfrom
+                    return; 
             }
-            else {
-                //moving up faster than 1 m/s
-            }
+            
         }
 
-        // store disabled state to contact
+        
         contact.disabled = true;
     }
 }

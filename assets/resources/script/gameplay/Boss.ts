@@ -39,18 +39,15 @@ export class Boss extends Component {
     private attackAnimNum;
     private startStat:boolean;  //ambil dari gameManager -> scoreManager (mulai masuk area + mulai gamenya)
 
-    private multiplier:number;
 
 
     onLoad(){
         this.rb = this.node.getComponent(RigidBody2D);
-        // this.circleC = this.node.getComponent(CircleCollider2D);
         this.bossAnim = this.node.getComponent(Animation);
-        // this.curClipName = this.bossAnim.defaultClip.toString();
         let parentNode = this.node.getParent();
         this.player = parentNode.getChildByName("Player");
         this.stunDur = 1;                                   //Sementar waktu untuk skellHit
-        // this.isHit=false;
+  
 
         this.directionVal = 1;
         this.canAttack= true;
@@ -105,16 +102,15 @@ export class Boss extends Component {
                 
                 this.playAnimation("skellIdle");
                 
-                
+                // Jika ketinggian player dibawah ukuran dari sprite boss
                 if (this.player.getPosition().y < 
-                this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y-this.player.getComponent(UITransform).contentSize.y){
-                    // console.log(this.player.getPosition().y);
-                    // console.log(this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y);
-                    if(this.canAttack){
+                    this.node.getPosition().y+this.node.getComponent(UITransform).contentSize.y-this.player.getComponent(UITransform).contentSize.y){
+
+                    if(this.canAttack){     //Jika ya, Serang dengan melee
                         this.attack();
                     }
                 }else {
-                    if (this.canAttack){
+                    if (this.canAttack){    //Jika tidak, Serang dengan bullet
                        
                         this.spawnBullet();
                     }
@@ -123,15 +119,16 @@ export class Boss extends Component {
             
             
         }
-        // console.log(this.curClipName);
 
     }
 
+    //Multiplier darah dan damage sesuai difficulty level, digunakan di GameManager
     setMultiplier(mult:number){
         this.bossDamage*=mult;
         this.bossHealth*=mult;
     }
 
+    //Boss diaktifkan / mulai bergerak dan menyerang
     activateBoss(){
         this.startStat = true;
     }
@@ -148,17 +145,14 @@ export class Boss extends Component {
     receiveAttackFromPlayer(damage:number){
 
         this.audio.onAudioQueue(6);
-        // this.isHit=true;
         this.heatlthBar.showEnemyHB();
+
         this.bossHealth-=damage;
-
-        // console.log(this.bossHealth);
-        // console.log("boss damage :"+damage);
-        // console.log("player health : "+this.bossHealth);
-
         this.heatlthBar.updateHealth("Boss",this.bossHealth);
-
-        this.bossAnim.play("skellHurt");
+        
+        if(!this.isAttacking){
+            this.bossAnim.play("skellHurt");
+        }
 
         if (this.isDead()) {    
             this.dead();
@@ -166,19 +160,20 @@ export class Boss extends Component {
       
     }
 
+    //Method buat ngeaktifin bullet
     spawnBullet(){
         
         this.canAttack=false;
         this.bossAnim.play("skellMagick");
-        this.scheduleOnce(()=>{
-            
+
+        this.scheduleOnce(()=>{     //Set awal lokasi bullet, dan nyalakan node + suara    
             this.pool.node.setPosition(this.node.getPosition());
             this.audio.onAudioQueue(4);
             this.pool.shoot(this.directionVal);
             
         },1);
     
-        this.scheduleOnce(()=>{
+        this.scheduleOnce(()=>{ //Timer
             this.canAttack = true;
             
         },1.5);
@@ -220,7 +215,7 @@ export class Boss extends Component {
         this.audio.onAudioQueue(5);
                                             // Serangan dilakukan setelah animasi selesai
         let animTimer:number = 1.1;
-        this.scheduleOnce(()=>{
+        this.scheduleOnce(()=>{         //Raycast
             for(let i =0 ;i< 3;i++){
                 let p1 = new Vec2(this.node.worldPosition.x-(75*this.directionVal), 77+(i*15));
                 let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 77+(i*45));
@@ -250,6 +245,7 @@ export class Boss extends Component {
         
     }
 
+    //Membalikkan sprite boss dan semua yang diperlukan
     flip(){
         let scale = this.node.getScale();
         this.node.setScale(scale.x*-1, scale.y,scale.z);

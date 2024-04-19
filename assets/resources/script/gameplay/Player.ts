@@ -46,7 +46,7 @@ export class Player extends Component {
     
     private deadStat:boolean;
     private isHit:boolean;
-    
+    private attackAnimNum:number;
     directionVal:number;
   
 
@@ -66,6 +66,7 @@ export class Player extends Component {
         this.rollCD = 2;
         this.attackCD = 0.5;        //Berdasarkan lama animasi attack
         this.directionVal = 1;       //Kanan = 1 , Kiri = -1, jadi val buat simpenan arah 
+        this.attackAnimNum = -1;
 
         this.canRolling = true;
         this.canAttack = true;
@@ -74,6 +75,7 @@ export class Player extends Component {
         this.isWallSliding= false;
         this.deadStat = false;
         this.isHit = false;
+
 
     }
 
@@ -215,8 +217,6 @@ export class Player extends Component {
                     this.flip();
                 }
                 this.horizontal=-1;
-
-
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
@@ -247,19 +247,11 @@ export class Player extends Component {
                   
                 }
                 break;
-            // case KeyCode.KEY_K:          //Metode menembak player 
-            //     this.spawnBullet();
-            //     break;
             case KeyCode.SHIFT_RIGHT:
                 if(Math.abs(this.horizontal)==1)this.horizontal*=2;
                 break;
         }
     }
-
-    // spawnBullet(){
-    //     this.pool.node.setPosition(this.node.getPosition());
-    //     this.pool.shoot(this.directionVal);
-    // }
 
     //Method untuk ketika melepas keycaps 
     keyUp(event:EventKeyboard){
@@ -275,14 +267,9 @@ export class Player extends Component {
         }
     }
 
-    // keyPress(event:EventKeyboard){
-    //     switch(event.keyCode){
-            
-    //     }
-    // }
 
 
-    private attackAnimNum:number=-1;
+     
     //Method attack pakai raycast
     attack(){
         //Cari posisi awal dan akhir serangan   

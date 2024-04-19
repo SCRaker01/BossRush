@@ -15,11 +15,11 @@ export class Bullet extends Component { private boss:Boss;
     private rb: RigidBody2D;    
     private collider :CircleCollider2D;
     
-    directionVal:number;
-    private statusCrashing:boolean;
-    
-    animation :Animation;
     private yDistToPlayer:number;
+    private statusCrashing:boolean;
+    directionVal:number;
+    animation :Animation;
+    
 
 
     onLoad(){
@@ -43,17 +43,20 @@ export class Bullet extends Component { private boss:Boss;
         }
         
     }
-    
+
+    //set lokasi spawn dan arah pergerakan (kanan /kiri)
     setSpawnAndDirection(pos:Vec3,direction:number){
         this.node.setPosition(pos.x+(-this.directionVal*(66)), pos.y);
         this.directionVal = direction;
         this.statusCrashing = false;
     }
 
+    //Menentukan jarak antara bullet dengan player
     setYDistance(yPos:number){
         this.yDistToPlayer = yPos - this.node.getPosition().y;
     }
     
+    //Mengupdate kecepatan bullet agar tidak melebihi maks speed 
     onValidate(){
         let targetSpeed = this.speed -this.rb.linearVelocity.y;
         let accelRate = (Math.abs(this.yDistToPlayer)>0) ? targetSpeed : this.speed ;
@@ -65,6 +68,7 @@ export class Bullet extends Component { private boss:Boss;
 
         let hero = this.node.getParent().getChildByName("Player").getComponent(Player);
 
+        //Hanya merotasi kan sprite bullet
         let dir:Vec2 = (new Vec2(hero.node.getPosition().x-this.node.getPosition().x,
                     hero.node.getPosition().y-this.node.getPosition().y))
 
@@ -73,18 +77,11 @@ export class Bullet extends Component { private boss:Boss;
         let out:Vec3 = new Vec3(1,1,1);
         let rotateAmount = Vec3.cross(out,new Vec3 (dir.x,dir.y,0), new Vec3(0,1,0)).z;
 
-        
-        // console.log(rotateAmount);
-        // console.log(this.rb.linearVelocity.y);
         this.rb.angularVelocity = -rotateAmount * 200;
 
-
-
-
-        // console.log(this.rb.angularVelocity);
         this.node.setRotationFromEuler(new Vec3(0,45,0));
 
-        
+        //Menyesuaikan pergerakan dengan difficulty level
         if(!this.statusCrashing){
             if(staticData.diff_Level== 3) {
                 this.rb.linearVelocity = new Vec2(this.speed*dir.x, this.speed*dir.y);
@@ -97,15 +94,11 @@ export class Bullet extends Component { private boss:Boss;
         
     }
 
+    //Saat bertabrakan
     onTouch(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
         this.animation.play("crash");
 
-        // if(otherCollider.tag ==0){
-        //     let boss = this.node.getParent().getChildByName("Boss").getComponent(Boss);
-        //     boss.receiveAttackFromPlayer(this.damage);
-        // }
-        // console.log(otherCollider.tag);
-        if(otherCollider.tag ==1){
+        if(otherCollider.tag ==1){  //Bullet bertabrakan dengan player
             let hero = this.node.getParent().getChildByName("Player").getComponent(Player);
             hero.receiveAttackFromBoss(this.damage);
         }

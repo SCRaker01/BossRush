@@ -14,6 +14,8 @@ export class Pool extends Component {
     start(){
         this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
         this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+
+        //Instansiasi bullet
         this.amountOfBullets = 5;
         for(let i =0 ; i < this.amountOfBullets;i++){
             let bulletPref = instantiate(this.bullet);
@@ -31,21 +33,19 @@ export class Pool extends Component {
         this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
     }
 
-    
-  
+    //Method pengambilan bullet
     getPooledObject():Node{
         for (let i = 0 ; i < this.bulletPool.length;i++){
             
             if(!this.bulletPool[i].activeInHierarchy){
-                // console.log(this.bulletPool.length);
-                // this.bulletPool[i].active = true;
-                
+
                 return this.bulletPool[i];
             }
         }
         return null;
     }
 
+    //Mendapatkan bullet yang ada dan mengaktifkannya
     shoot(directionVal: number){
         let bullet = this.getPooledObject();
         if(bullet!=null){

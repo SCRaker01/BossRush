@@ -9,7 +9,6 @@ export class NewComponent extends Component {
     @property({type:AudioManager}) private audio : AudioManager;
 
     onLoad(){
-        // director.preloadScene("gameplay");
         this.audio.onAudioQueue(1);
         this.closeInfo();
         this.closeLevelSel();
@@ -22,34 +21,43 @@ export class NewComponent extends Component {
         director.loadScene("gameplay");
     }
 
+    //Method untuk button buka info
     openInfo(){
         this.infoScreen.active = true;
         this.audio.onAudioQueue(0);
     }
     
+    //Method untuk button tutup info
     closeInfo(){
         this.infoScreen.active = false;
         this.audio.onAudioQueue(0);
     }
     
+    //Method untuk buka level selection lewat start
     openLevelSel(){
         this.levelSelect.active = true;
         this.audio.onAudioQueue(0);
     }
-
+    
+    //Method untuk tutup level selection (belum diimplementasikan sebab belum diperlukan)
     closeLevelSel(){
         this.levelSelect.active = false;
         this.audio.onAudioQueue(0);
     }
     
+    //Method untuk diff level mudah
     easy(){
         staticData.diff_Level = 1;
         this.startGame();
     }
+
+    //Method untuk diff level menengah
     medium(){
         staticData.diff_Level = 2;
         this.startGame();
     }
+
+    //Method untuk diff level sulit
     hard(){
         staticData.diff_Level = 3;
         this.startGame();

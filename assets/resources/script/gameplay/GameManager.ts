@@ -15,6 +15,7 @@ export class GameManager extends Component {
     @property({type:Node}) player:Node;
     @property({type:Node}) boss:Node;
     @property({type:Node}) door:Node;
+    @property({type:Node}) movementInfo:Node;
 
     @property({type:HealthBar}) hb:HealthBar;
     @property({type:Node}) pScreen:Node;
@@ -30,11 +31,12 @@ export class GameManager extends Component {
 
     onLoad(){
         
-        // this.audio.onAudioQueue(0);
+        
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
         this.bossComp = this.boss.getComponent(Boss);
         this.playerComp = this.player.getComponent(Player);
+        this.movementInfo.active = true;
 
         if(staticData.diff_Level == 2){
             this.bossComp.setMultiplier(1.5);
@@ -54,60 +56,79 @@ export class GameManager extends Component {
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
-        // console.log(staticData.diff_Level);
+
         
+        //Camera mengikuti pergerakan player dalam batas yang ditentukan
         if( this.playerPos.x>=-1280 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
+            this.movementInfo.setPosition(new Vec3(this.playerPos.x, this.movementInfo.getPosition().y,0))
             
         }
         
+        //Memposisikan lokasi UI pada screen
         this.pButton.node.setPosition(new Vec3(this.camera.getPosition().x,this.pButton.node.getPosition().y,0));
         this.pScreen.setPosition(new Vec3(this.camera.getPosition().x,0,0));
         this.stopWatchLabel.node.setPosition(new Vec3(this.camera.getPosition().x,this.stopWatchLabel.node.getPosition().y,0));
        
-        // console.log(this.playerPos.x)
-
-        if(!this.sManager.getTimer() && this.playerPos.x>-635){
-            this.sManager.activateTime();
-            this.bossComp.activateBoss();
-            this.door.getComponent(BoxCollider2D).enabled = true;
-            this.door.getComponent(Animation).play("doorClose");
-            this.audio.onAudioQueue(4);
+        if(!this.sManager.getStartStatus() && this.playerPos.x>-635){
+            this.stageStart();
         }
 
         if(this.bossComp.isDead()){
-            this.sManager.deactivateGame();
-            staticData.score = this.sManager.getScore();
-            staticData.isGameBeaten = true;
-            this.pButton.node.active = false;
-            this.scheduleOnce(()=>{
-                director.loadScene("endScreen");
-            },2.5);
-            
+            this.stageEndBoss();
         }
         
         if(this.playerComp.isDead()){
-            this.sManager.deactivateGame();
-            staticData.isGameBeaten = false;
-            this.scheduleOnce(()=>{
-                director.loadScene("endScreen");
-            },1);
+            this.stageEndPlayer();
         }
     }
 
+    //Mulai stage
+    stageStart(){
+        this.movementInfo.active = false;
+        this.sManager.activateTime();
+        this.bossComp.activateBoss();
+        this.door.getComponent(BoxCollider2D).enabled = true;
+        this.door.getComponent(Animation).play("doorClose");
+        this.audio.onAudioQueue(4);
+    }
 
+    //Akhiri stage saat boss mati
+    stageEndBoss(){
+        this.sManager.deactivateGame();
+        staticData.score = this.sManager.getScore();
+        staticData.isGameBeaten = true;
+        this.pButton.node.active = false;
+        this.scheduleOnce(()=>{
+            director.loadScene("endScreen");
+        },2.5);
+            
+    }
+
+    //Akhiri stage saat player mati
+    stageEndPlayer(){
+        this.sManager.deactivateGame();
+        staticData.isGameBeaten = false;
+        this.scheduleOnce(()=>{
+            director.loadScene("endScreen");
+        },1);
+    }
+
+    //Pause
     pause(){
         this.audio.onAudioQueue(1);
         director.pause();
         this.pScreen.active = true;
     }
     
+    //Lanjutkan game / unpause
     continue(){
         this.audio.onAudioQueue(1);
         director.resume();
         this.pScreen.active = false;
     }
     
+    //Kembali ke start screen
     exitToStart(){
         this.audio.onAudioQueue(1);
         director.loadScene("startScreen");
