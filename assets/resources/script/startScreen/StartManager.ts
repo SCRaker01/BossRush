@@ -10,8 +10,14 @@ export class NewComponent extends Component {
 
     onLoad(){
         this.audio.onAudioQueue(1);
+        this.resetStatic();
         this.closeInfo();
         this.closeLevelSel();
+    }
+
+    resetStatic(){
+        staticData.diff_Level=null;
+        staticData.isGameBeaten=null;
     }
 
     startGame(){

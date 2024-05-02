@@ -31,7 +31,7 @@ export class GameManager extends Component {
 
     onLoad(){
         
-        
+        director.preloadScene("startScreen");
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
         this.bossComp = this.boss.getComponent(Boss);
@@ -119,6 +119,7 @@ export class GameManager extends Component {
         this.audio.onAudioQueue(1);
         director.pause();
         this.pScreen.active = true;
+        this.movementInfo.active = false;
     }
     
     //Lanjutkan game / unpause
@@ -131,6 +132,7 @@ export class GameManager extends Component {
     //Kembali ke start screen
     exitToStart(){
         this.audio.onAudioQueue(1);
+        director.resume();
         director.loadScene("startScreen");
     }
 }

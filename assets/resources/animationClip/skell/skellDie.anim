@@ -22,7 +22,25 @@
       }
     ],
     "_exoticAnimation": null,
-    "_events": [],
+    "_events": [
+      {
+        "frame": 0.18333333333333332,
+        "func": "",
+        "params": []
+      },
+      {
+        "frame": 0.18333333333333332,
+        "func": "",
+        "params": []
+      },
+      {
+        "frame": 0.18333333333333332,
+        "func": "setXonDeath",
+        "params": [
+          0
+        ]
+      }
+    ],
     "_embeddedPlayers": [],
     "_additiveSettings": {
       "__id__": 13
@@ -173,7 +191,7 @@
   {
     "__type__": "cc.RealCurve",
     "_times": [
-      0.4166666567325592,
+      0.4166666666666667,
       1
     ],
     "_values": [
@@ -214,7 +232,7 @@
   {
     "__type__": "cc.RealCurve",
     "_times": [
-      0.18333333730697632,
+      0.18333333333333332,
       1
     ],
     "_values": [

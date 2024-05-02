@@ -1,6 +1,8 @@
 import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,input, Contact2DType, 
     Collider2D, IPhysics2DContact, Input, EventKeyboard,Animation, 
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, ERaycast2DType,
+    PhysicsSystem,
+    geometry,
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
@@ -15,6 +17,7 @@ export class Player extends Component {
     @property({type: CCFloat}) private jumpForce:number;
     @property({type: CCFloat}) private playerDamage:number;
     @property({type: CCFloat}) private playerHealth:number;
+    @property({type: CCFloat}) private speed:number;
     @property({type:AudioManager}) private audio :AudioManager;
     
     
@@ -28,7 +31,6 @@ export class Player extends Component {
     
     private curClipName:string;
     private horizontal:number;
-    private speed:number;
     private isJumping:boolean;
     private isOnGround:boolean;
     private isFacingRight:boolean;
@@ -62,7 +64,6 @@ export class Player extends Component {
         this.rb = this.node.getComponent(RigidBody2D);
 
         this.horizontal = 0;
-        this.speed = 8;
         this.rollCD = 2;
         this.attackCD = 0.5;        //Berdasarkan lama animasi attack
         this.directionVal = 1;       //Kanan = 1 , Kiri = -1, jadi val buat simpenan arah 
@@ -273,8 +274,9 @@ export class Player extends Component {
     //Method attack pakai raycast
     attack(){
         //Cari posisi awal dan akhir serangan   
+        const worldRay = new geometry.Ray(0, -1, 0, 0, 1, 0);
         let p1 = new Vec2(this.node.worldPosition.x-(20*this.directionVal), this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
+        let p2 = new Vec2(this.node.worldPosition.x+(75*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
         let mask = 0xffffffff;
 
         // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
@@ -289,6 +291,9 @@ export class Player extends Component {
             }
 
         }
+
+        // let results = PhysicsSystem.instance.sweepSphere(worldRay,22,mask,Number.MAX_VALUE,true);
+        // console.log(results)
 
         //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;

@@ -46,7 +46,7 @@ export class Bullet extends Component { private boss:Boss;
 
     //set lokasi spawn dan arah pergerakan (kanan /kiri)
     setSpawnAndDirection(pos:Vec3,direction:number){
-        this.node.setPosition(pos.x+(-this.directionVal*(66)), pos.y);
+        this.node.setPosition(pos.x+(-this.directionVal*(66)), pos.y+72);       //72 nya penyesuaian setengah ukuran boss
         this.directionVal = direction;
         this.statusCrashing = false;
     }

@@ -162,7 +162,7 @@ export class Boss extends Component {
 
     //Method buat ngeaktifin bullet
     spawnBullet(){
-        
+        this.isAttacking = true;
         this.canAttack=false;
         this.bossAnim.play("skellMagick");
 
@@ -171,11 +171,11 @@ export class Boss extends Component {
             this.audio.onAudioQueue(4);
             this.pool.shoot(this.directionVal);
             
+            this.isAttacking = false;
         },1);
     
         this.scheduleOnce(()=>{ //Timer
             this.canAttack = true;
-            
         },1.5);
     }
 
@@ -217,26 +217,31 @@ export class Boss extends Component {
         let animTimer:number = 1.1;
         this.scheduleOnce(()=>{         //Raycast
             for(let i =0 ;i< 3;i++){
-                let p1 = new Vec2(this.node.worldPosition.x-(75*this.directionVal), 77+(i*15));
-                let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 77+(i*45));
+                let p1 = new Vec2(this.node.worldPosition.x-(25*this.directionVal), 15+(i*30));
+                let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 15+(i*30));
                 let mask = 0xffffffff;
+
+                console.log(p2.y)
          
                 let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-                
-          
         
+                let hit =false;
                 if(results){
-    
-                    if(results[0]!=null && results[0].collider.tag ==1) {
-                        results[0].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+                    for (let j=0;j<results.length;j++){
+                        if(results[j]!=null && results[j].collider.tag ==1) {
+                            results[j].collider.getComponent(Player).receiveAttackFromBoss(this.bossDamage);
+                            hit=true;
+                            break;
+                        }
                     }
-                }
 
+                }
+                if(hit)break;
             }
             this.isAttacking = false;
         },animTimer);
         
-        
+        ///
         this.scheduleOnce(()=>{
      
             this.canAttack = true;
