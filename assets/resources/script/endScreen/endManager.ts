@@ -46,7 +46,9 @@ export class endManager extends Component {
     //Method menghitung total score
     scoreCalc(diff_Level: number){
         let baseNumber = 100;
-        staticData.score = (baseNumber-staticData.score) + Math.floor((staticData.score*(Math.PI*diff_Level)));
+        staticData.score = Math.round((staticData.score-baseNumber)*((staticData.numOfCultistDefeated*1.5)+(staticData.numOfRatDefeated*1.2)
+        +(staticData.numOfWormDefeated*1.75)+(staticData.numOfWolfDefeated*1.45))/2)
+        + Math.floor((staticData.score*(Math.PI*diff_Level)));
     }
 
     start(){
