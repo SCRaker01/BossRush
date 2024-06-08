@@ -24,7 +24,8 @@ export class NewComponent extends Component {
         this.audio.onAudioQueue(0);
         
         staticData.score =0;
-        director.loadScene("gameplay");
+        staticData.currentStage=1
+        director.loadScene("stageA");
     }
 
     //Method untuk button buka info
@@ -53,12 +54,6 @@ export class NewComponent extends Component {
     
     //Method untuk diff level mudah
     easy(){
-        staticData.diff_Level = 1;
-        this.startGame();
-    }
-
-    //Method untuk diff level menengah
-    medium(){
         staticData.diff_Level = 2;
         this.startGame();
     }

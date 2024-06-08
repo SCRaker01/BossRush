@@ -1,18 +1,19 @@
 import { _decorator, Collider2D, Component, instantiate, IPhysics2DContact, Node, Prefab, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 import { Bullet } from './Bullet';
+import { staticData } from '../other/staticData';
 @ccclass('Pool')
 export class Pool extends Component {
    @property({type:Prefab}) private bullet:Prefab;
     
-    private bosPos:Vec3;
+    private FireWorm:Vec3;
     private playerPos:Vec3;
     private bulletPool: Node[] = [];
     private amountOfBullets:number;
 
 
     start(){
-        this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
+        this.FireWorm = this.node.getParent().getChildByName("Monster").getChildByName("FireWorm").getPosition();
         this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
 
         //Instansiasi bullet
@@ -22,15 +23,21 @@ export class Pool extends Component {
             this.bulletPool.push(bulletPref);
             
             bulletPref.active = false;           
-            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.bosPos,0);
+            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.FireWorm,0);
             bulletPref.setParent(this.node.getParent());
         }
 
     }
 
     update(deltaTime:number){
-        this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
-        this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+        console.log(staticData.numberOfFireworms);
+        if(staticData.numberOfFireworms>0){
+            this.FireWorm = this.node.getParent().getChildByName("Monster").getChildByName("FireWorm").getPosition();
+
+            this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+
+        }
+        
     }
 
     //Method pengambilan bullet
@@ -50,9 +57,8 @@ export class Pool extends Component {
         let bullet = this.getPooledObject();
         if(bullet!=null){
             bullet.active = true;
-            bullet.getComponent(Bullet).setSpawnAndDirection(this.bosPos,directionVal);
-            bullet.getComponent(Bullet).setYDistance(this.playerPos.y);
-            bullet.getComponent(Bullet).animation.play("fly");
+            bullet.getComponent(Bullet).setSpawnAndDirection(this.FireWorm,directionVal);
+            bullet.getComponent(Bullet).animation.play("fireMove");
             // console.log(bullet.getComponent(Bullet).directionVal);
 
         }

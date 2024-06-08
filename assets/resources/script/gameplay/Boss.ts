@@ -4,6 +4,7 @@ import { Player } from './Player';
 import { HealthBar } from './HealthBar';
 import { Pool } from './Pool';
 import { AudioManager } from '../other/AudioManager';
+import { PoolHoming } from './PoolHoming';
 
 const { ccclass, property } = _decorator;
 
@@ -13,7 +14,7 @@ export class Boss extends Component {
     /*@property({type:Node})*/ private player:Node;
     @property({type:CCInteger}) private bossHealth:number;
     @property({type:CCInteger}) private bossDamage:number;
-    @property({type:Pool}) private pool:Pool;
+    @property({type:PoolHoming}) private poolHoming:PoolHoming;
     @property({type:AudioManager}) private audio:AudioManager;
   
 
@@ -167,9 +168,9 @@ export class Boss extends Component {
         this.bossAnim.play("skellMagick");
 
         this.scheduleOnce(()=>{     //Set awal lokasi bullet, dan nyalakan node + suara    
-            this.pool.node.setPosition(this.node.getPosition());
+            this.poolHoming.node.setPosition(this.node.getPosition());
             this.audio.onAudioQueue(4);
-            this.pool.shoot(this.directionVal);
+            this.poolHoming.shoot(this.directionVal);
             
             this.isAttacking = false;
         },1);
@@ -221,9 +222,9 @@ export class Boss extends Component {
                 let p2 = new Vec2(this.node.worldPosition.x+(150*this.directionVal), 15+(i*30));
                 let mask = 0xffffffff;
 
-                console.log(p2.y)
-         
+                
                 let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+                console.log(results)
         
                 let hit =false;
                 if(results){

@@ -7,6 +7,7 @@ export class staticData extends Component {
     static diff_Level: number;
     static bestScore: number=0;
     static isGameBeaten: boolean;
+    static numberOfFireworms :number = 0;
 }
 
 

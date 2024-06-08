@@ -1,4 +1,4 @@
-import { _decorator, BoxCollider2D, Button, Component, director, Label, Node, Vec3 } from 'cc';
+import { _decorator, BoxCollider2D, Button, Component, director, Label, Node, Scene, Vec3 } from 'cc';
 import { scoreManager } from '../endScreen/scoreManager';
 import { AudioManager } from '../other/AudioManager';
 import { staticData } from '../other/staticData';
@@ -44,13 +44,25 @@ export class StageManager extends Component {
         }
         // director.preloadScene("endScreen");
         this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
+        
 
+        
       
+    }
+
+    start() {
+        if(staticData.currentStage=1){
+            staticData.numberOfFireworms=2;
+        } else if (staticData.currentStage=2){
+            staticData.numberOfFireworms=3;
+        } else if (staticData.currentStage=3){
+            staticData.numberOfFireworms=3;
+        }
     }
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
-
+        console.log(director.getScene())
         
         //Camera mengikuti pergerakan player dalam batas yang ditentukan
         if( this.playerPos.x>=-2000 && this.playerPos.x<=640){
@@ -64,12 +76,16 @@ export class StageManager extends Component {
         this.pScreen.setPosition(new Vec3(this.camera.getPosition().x,0,0));
         this.stopWatchLabel.node.setPosition(new Vec3(this.camera.getPosition().x,this.stopWatchLabel.node.getPosition().y,0));
        
-        if(!this.sManager.getStartStatus() && this.playerPos.x>-635){
+        if(!this.sManager.getStartStatus() ){
             this.stageStart();
         }
 
         if(this.playerComp.isDead()){
             this.stageEndPlayer();
+        }
+
+        if(this.playerPos.x>1280){
+            this.nextStage();
         }
     }
 
@@ -77,12 +93,19 @@ export class StageManager extends Component {
     stageStart(){
         this.movementInfo.active = false;
         this.sManager.activateTime();
-        this.bossComp.activateBoss();
 
         this.audio.onAudioQueue(4);
     }
 
-    //Akhiri stage saat boss mati
+    nextStage(){
+        if(staticData.currentStage==1){
+            director.preloadScene("sceneB")
+            staticData.currentStage=2
+        }else if(staticData.currentStage==2){
+            director.preloadScene("gameplay")
+            staticData.currentStage=3
+        }
+    }
 
     //Akhiri stage saat player mati
     stageEndPlayer(){

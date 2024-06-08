@@ -9,6 +9,10 @@ import { KeyCode } from 'cc';
 import { Boss } from './Boss';
 import { HealthBar } from './HealthBar';
 import { AudioManager } from '../other/AudioManager';
+import { Rat } from '../Monster/Rat';
+import { Wolf } from '../Monster/Wolf';
+import { Cultist } from '../Monster/Cultist';
+import { Fireworm } from '../Monster/Fireworm';
 // import { Pool } from './Pool';
 const { ccclass, property } = _decorator;
 
@@ -101,7 +105,7 @@ export class Player extends Component {
 
     update(deltaTime: number) {
         // console.log(this.horizontal);
-
+        // console.log(this.playerDamage)
         
         if(!this.deadStat){
             if(this.isHit){
@@ -118,16 +122,6 @@ export class Player extends Component {
             if(!this.isRolling){
 
                 
-                
-
-                // if (!this.isMovingLeft && !this.isMovingRight ){
-                    
-                // }
-
-                console.log(this.horizontal) 
-               
-                // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-    
                 //BERLARI
                 if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
       
@@ -169,7 +163,7 @@ export class Player extends Component {
                 this.playAnimation("heroFall");
             }
         }
-        console.log(this.rb.linearVelocity);
+        // console.log(this.rb.linearVelocity);
     
         
     }
@@ -177,7 +171,7 @@ export class Player extends Component {
 
     //Method Jump
     jump(){
-        this.audio.onAudioQueue(9);
+        this.audio.onAudioQueue(5);
         this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.jumpForce*1.5);
         this.isJumping=false;
         this.isOnGround=false;
@@ -202,7 +196,7 @@ export class Player extends Component {
             this.isOnGround = true;
             this.canDoubleJump=false;
          
-            this.audio.onAudioQueue(8);
+            this.audio.onAudioQueue(4);
         }
         if(otherCollider.tag==0){               //Boss
             // this.knockback();
@@ -318,31 +312,76 @@ export class Player extends Component {
 
     //Method attack pakai raycast
     attack(){
-        //Cari posisi awal dan akhir serangan   
-        const worldRay = new geometry.Ray(0, -1, 0, 0, 1, 0);
-        let p1 = new Vec2(this.node.worldPosition.x-(20*this.directionVal), this.node.worldPosition.y);
-        let p2 = new Vec2(this.node.worldPosition.x+(75*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
-        let mask = 0xffffffff;
+        let hit =false;
+        for(let i =0 ;i< 3 &&!hit;i++){
+                let p1 = new Vec2(this.node.worldPosition.x-(25*this.directionVal),this.node.worldPosition.y);
+                let p2 = new Vec2(this.node.worldPosition.x+(75*this.directionVal), this.node.worldPosition.y);
+                let mask = 0xffffffff;
 
-        // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
+                
+                let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+                console.log(results)
+        
+                if(results){
+                    for (let j=0;j<results.length;j++){
+                        if(results[j]!=null && results[j].collider&&results[j].collider.tag ==0) {  //Boss
+                            results[j].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+                       
+                            hit=true;
+                            
+                        }
+                        if(results[j]!=null && results[j].collider&&results[j].collider.tag ==99) { //Momon Rat
+                    
+                            results[j].collider.getComponent(Rat).receiveAttackFromPlayer(this.playerDamage);
+                            hit=true;
+                            
+                        }
+                        if(results[j]!=null && results[j].collider&&results[j].collider.tag ==98) { //Momon Wolf
+                    
+                            results[j].collider.getComponent(Wolf).receiveAttackFromPlayer(this.playerDamage);
+                            hit=true;
+                            
+                        }
+                        if(results[j]!=null && results[j].collider&&results[j].collider.tag ==97) { //Momon Cultist                    
+                            results[j].collider.getComponent(Cultist).receiveAttackFromPlayer(this.playerDamage);
+                            hit=true;
+                            
+                        }
+                        if(results[j]!=null && results[j].collider&&results[j].collider.tag ==96) { //Momon Cultist                    
+                            results[j].collider.getComponent(Fireworm).receiveAttackFromPlayer(this.playerDamage);
+                            hit=true;
+                            
+                        }
+                        if(hit) break;
+                    }
 
-        let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-
-        if(results){
-            // console.log(results);
-            // console.log(results[0]);
-            if(results[0] != null && results[0].collider.tag ==0) {
-                results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+                }
+                // if(hit)break;
             }
+        //Cari posisi awal dan akhir serangan   
+        // const worldRay = new geometry.Ray(0, -1, 0, 0, 1, 0);
+        // let p1 = new Vec2(this.node.worldPosition.x-(20*this.directionVal), this.node.worldPosition.y);
+        // let p2 = new Vec2(this.node.worldPosition.x+(75*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
+        // let mask = 0xffffffff;
 
-        }
+        // // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
+
+        // let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
+
+        // if(results){
+            
+        //     if(results[0] != null && results[0].collider.tag ==0) {
+        //         results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
+        //     }
+
+        // }
 
         // let results = PhysicsSystem.instance.sweepSphere(worldRay,22,mask,Number.MAX_VALUE,true);
         // console.log(results)
 
         //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;
-        this.audio.onAudioQueue(5);
+        this.audio.onAudioQueue(6);
         this.attackAnimNum++;
         if(this.attackAnimNum%3==0){
             this.playerAnim.play("heroAttack1");
@@ -396,7 +435,7 @@ export class Player extends Component {
     //----------------------------------------------------------------
     //Method ketika player mati
     dead(){
-        this.audio.onAudioQueue(7);
+        this.audio.onAudioQueue(3);
         this.playAnimation("heroDeath");
         
         this.scheduleOnce(()=>{
