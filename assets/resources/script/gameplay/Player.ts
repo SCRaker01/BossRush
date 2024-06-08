@@ -3,6 +3,7 @@ import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,inp
     PhysicsSystem2D, v2, PHYSICS_2D_PTM_RATIO, BoxCollider2D, ERaycast2DType,
     PhysicsSystem,
     geometry,
+    lerp,
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
@@ -42,16 +43,19 @@ export class Player extends Component {
     private attackCD:number;
     
     private tempSpeed:number;
-    private isWallSliding:boolean;
-    
+    private isMovingRight:boolean;
+    private isMovingLeft:boolean;
+    private isMoving:boolean;
+
     private canDoubleJump:boolean;
     
     private deadStat:boolean;
     private isHit:boolean;
     private attackAnimNum:number;
-    directionVal:number;
+    private directionVal:number;
   
-
+    private acc:number;
+    private maxSpeed:number;
    
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
@@ -73,11 +77,14 @@ export class Player extends Component {
         this.canAttack = true;
         this.canDoubleJump= false;
 
-        this.isWallSliding= false;
+        this.isMovingRight= false;
+        this.isMovingLeft= false;
+        this.isMoving= false;
         this.deadStat = false;
         this.isHit = false;
 
-
+        this.acc = 1;
+        this.maxSpeed = 20;
     }
 
     start(){
@@ -100,9 +107,26 @@ export class Player extends Component {
             if(this.isHit){
                 return;
             }
-
-            if(!this.isRolling){
+            if(this.isMovingRight||this.isMovingLeft){
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
+            }else if(!this.isMovingLeft&& !this.isMovingRight){
+                this.rb.linearVelocity = new Vec2( (lerp(this.horizontal,0,0.25))*this.rb.linearVelocity.x,this.rb.linearVelocity.y)
+
+            }
+
+            // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.rb.linearVelocity.y)
+            if(!this.isRolling){
+
+                
+                
+
+                // if (!this.isMovingLeft && !this.isMovingRight ){
+                    
+                // }
+
+                console.log(this.horizontal) 
+               
+                // this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
     
                 //BERLARI
                 if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
@@ -144,18 +168,17 @@ export class Player extends Component {
                 // console.log(this.isOnGround);
                 this.playAnimation("heroFall");
             }
-            // console.log(this.rb.linearVelocity);
         }
+        console.log(this.rb.linearVelocity);
     
         
     }
 
-    
-   
+
     //Method Jump
     jump(){
         this.audio.onAudioQueue(9);
-        this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.jumpForce*1.5);
+        this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.jumpForce*1.5);
         this.isJumping=false;
         this.isOnGround=false;
         this.isRolling=false;
@@ -178,7 +201,7 @@ export class Player extends Component {
         if(otherCollider.tag==2){               //Ground
             this.isOnGround = true;
             this.canDoubleJump=false;
-            this.isWallSliding=false;
+         
             this.audio.onAudioQueue(8);
         }
         if(otherCollider.tag==0){               //Boss
@@ -208,16 +231,26 @@ export class Player extends Component {
                 if(this.isFacingRight){
                     this.flip();
                 }
-
+                this.isMoving = true;
                 this.horizontal=1;
-
+                // this.rb.linearVelocity =new Vec2(Math.min(this.rb.linearVelocity.x+this.acc, this.maxSpeed ), this.rb.linearVelocity.y);
+                // this.rb.linearVelocity = new Vec2(this.speed,this.rb.linearVelocity.y)
+                this.isMovingRight = true;
                 break;
-            case KeyCode.ARROW_LEFT:
-            case KeyCode.KEY_A:
-                if(!this.isFacingRight){
-                    this.flip();
-                }
+                case KeyCode.ARROW_LEFT:
+                    case KeyCode.KEY_A:
+                        
+                        if(!this.isFacingRight){
+                            this.flip();
+                        }
+                        
+                // this.rb.linearVelocity = new Vec2(-this.speed,this.rb.linearVelocity.y)
+                this.isMovingLeft = true;
+                this.isMoving = true;
                 this.horizontal=-1;
+                // this.rb.linearVelocity =new Vec2(Math.min(this.rb.linearVelocity.x-this.acc, -this.maxSpeed ), this.rb.linearVelocity.y);
+
+
                 break;
             case KeyCode.ARROW_UP:
             case KeyCode.KEY_W:
@@ -235,7 +268,7 @@ export class Player extends Component {
                 break;
             case KeyCode.SHIFT_LEFT:
             
-                    if(this.canRolling && !this.isHit){
+                    if(this.canRolling && !this.isHit && Math.abs(this.rb.linearVelocity.x)>0){
 
                         this.isRolling = true;
                         this.tempSpeed = this.rb.linearVelocity.x;
@@ -245,32 +278,44 @@ export class Player extends Component {
             case KeyCode.KEY_J:
                 if(this.canAttack){
                     this.attack();
-                  
                 }
                 break;
+
             case KeyCode.SHIFT_RIGHT:
-                if(Math.abs(this.horizontal)==1)this.horizontal*=2;
+                if(Math.abs(this.rb.linearVelocity.x) <= this.maxSpeed){
+                    this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x*2,this.rb.linearVelocity.y)
+
+                }
                 break;
         }
     }
 
     //Method untuk ketika melepas keycaps 
-    keyUp(event:EventKeyboard){
+    keyUp(event:EventKeyboard){     
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
+
+                this.isMovingRight = false;
+                break;
+
             case KeyCode.ARROW_LEFT:
             case KeyCode.KEY_A:
-                this.horizontal=0;
+
+            // Ubah jangan langsung 0 ,tapi berkurang aja
+                // this.horizontal=0;
+                this.isMovingLeft = false;
+                    // this.rb.linearVelocity = new Vec2(lerp(this.rb.linearVelocity.x,0,0.65),this.rb.linearVelocity.y);
+                // this.isMoving = false;
+
+                
                 break;
             case KeyCode.SHIFT_RIGHT:
                 if(Math.abs(this.horizontal)>1)this.horizontal/=2;
+                break;
         }
     }
 
-
-
-     
     //Method attack pakai raycast
     attack(){
         //Cari posisi awal dan akhir serangan   
