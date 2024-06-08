@@ -1,6 +1,6 @@
 import { _decorator, Collider2D, Component, instantiate, IPhysics2DContact, Node, Prefab, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
-import { Bullet } from './Bullet';
+import { HomingBullet } from './HomingBullet';
 @ccclass('PoolHoming')
 export class PoolHoming extends Component {
    @property({type:Prefab}) private bullet:Prefab;
@@ -9,7 +9,7 @@ export class PoolHoming extends Component {
     private playerPos:Vec3;
     private bulletPool: Node[] = [];
     private amountOfBullets:number;
-
+    private yDistToPlayer:number;
 
     start(){
         this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
@@ -22,7 +22,7 @@ export class PoolHoming extends Component {
             this.bulletPool.push(bulletPref);
             
             bulletPref.active = false;           
-            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.bosPos,0);
+            bulletPref.getComponent(HomingBullet).setSpawnAndDirection(this.bosPos,0);
             bulletPref.setParent(this.node.getParent());
         }
 
@@ -31,6 +31,9 @@ export class PoolHoming extends Component {
     update(deltaTime:number){
         this.bosPos = this.node.getParent().getChildByName("Boss").getPosition();
         this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
+    }
+    setYDistance(yPos:number){
+        this.yDistToPlayer = yPos - this.node.getPosition().y;
     }
 
     //Method pengambilan bullet
@@ -50,10 +53,10 @@ export class PoolHoming extends Component {
         let bullet = this.getPooledObject();
         if(bullet!=null){
             bullet.active = true;
-            bullet.getComponent(Bullet).setSpawnAndDirection(this.bosPos,directionVal);
-            bullet.getComponent(Bullet).setYDistance(this.playerPos.y);
-            bullet.getComponent(Bullet).animation.play("fly");
-            // console.log(bullet.getComponent(Bullet).directionVal);
+            bullet.getComponent(HomingBullet).setSpawnAndDirection(this.bosPos,directionVal);
+            bullet.getComponent(HomingBullet).setYDistance(this.playerPos.y);
+            bullet.getComponent(HomingBullet).animation.play("fly");
+          
 
         }
     }

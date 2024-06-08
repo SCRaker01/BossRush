@@ -1,4 +1,5 @@
 import { _decorator, Component, Enum, Label, Node, Scene } from 'cc';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 @ccclass('scoreManager')
@@ -12,7 +13,11 @@ export class scoreManager extends Component {
     
     
     start() {
-        this.reset();
+        this.score = staticData.score;
+        this.startStatus=true;
+        this.gameEnd = false;
+        this.timer =0;
+        // this.reset();
     }
         
     update(deltaTime: number) {
@@ -52,6 +57,7 @@ export class scoreManager extends Component {
     //Naikkan score dan update label
     increment(){
         this.score++;
+        staticData.score= this.score;
         this.stopWatchLabel.string = this.score+"";
     }
 

@@ -30,7 +30,7 @@ export class Pool extends Component {
     }
 
     update(deltaTime:number){
-        console.log(staticData.numberOfFireworms);
+        // console.log(staticData.numberOfFireworms);
         if(staticData.numberOfFireworms>0){
             this.FireWorm = this.node.getParent().getChildByName("Monster").getChildByName("FireWorm").getPosition();
 

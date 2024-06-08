@@ -46,6 +46,10 @@ export class Bullet extends Component {
         
     }
 
+    setYDistance(yPos:number){
+        this.yDistToPlayer = yPos - this.node.getPosition().y;
+    }
+    
     //set lokasi spawn dan arah pergerakan (kanan /kiri)
     setSpawnAndDirection(pos:Vec3,direction:number){
         let scale = this.node.getScale();

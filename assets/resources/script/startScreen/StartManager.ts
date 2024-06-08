@@ -24,7 +24,7 @@ export class NewComponent extends Component {
         this.audio.onAudioQueue(0);
         
         staticData.score =0;
-        staticData.currentStage=1
+        staticData.currentStage=0;
         director.loadScene("stageA");
     }
 

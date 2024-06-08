@@ -2,6 +2,7 @@ import { _decorator, CCInteger, Component, ERaycast2DType, Node, PhysicsSystem2D
 import { HealthBar } from '../gameplay/HealthBar';
 import { Player } from '../gameplay/Player';
 import { AudioManager } from '../other/AudioManager';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Rat')
@@ -153,6 +154,7 @@ export class Rat extends Component {
    
        //Method yang dimainkan ketika boss mati
        dead(){
+            staticData.numOfRatDefeated++;
            this.audio.onAudioQueue(6);
            this.playAnimation("ratDie");
            this.scheduleOnce(()=>{

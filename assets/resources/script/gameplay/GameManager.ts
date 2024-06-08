@@ -16,6 +16,7 @@ export class GameManager extends Component {
     @property({type:Node}) boss:Node;
     @property({type:Node}) door:Node;
     @property({type:Node}) movementInfo:Node;
+    @property({type:Node}) Monster:Node;
 
     @property({type:HealthBar}) hb:HealthBar;
     @property({type:Node}) pScreen:Node;
@@ -36,7 +37,7 @@ export class GameManager extends Component {
         this.playerPos = this.player.getPosition();
         this.bossComp = this.boss.getComponent(Boss);
         this.playerComp = this.player.getComponent(Player);
-        this.movementInfo.active = true;
+        // this.movementInfo.active = true;
 
         if(staticData.diff_Level == 2){
             this.bossComp.setMultiplier(1.5);
@@ -51,7 +52,7 @@ export class GameManager extends Component {
             this.door.getComponent(Animation).play("doorOpen");
             this.audio.onAudioQueue(3);
         },1)
-      
+        this.Monster.active = false;
     }
     
     update(deltaTime: number) {
@@ -80,6 +81,10 @@ export class GameManager extends Component {
         
         if(this.playerComp.isDead()){
             this.stageEndPlayer();
+        }
+
+        if(this.bossComp.getHealth()<this.bossComp.getMaxHealth()/3){
+            this.Monster.active=true;
         }
     }
 
@@ -131,9 +136,24 @@ export class GameManager extends Component {
     
     //Kembali ke start screen
     exitToStart(){
+        this.reset();
         this.audio.onAudioQueue(1);
         director.resume();
         director.loadScene("startScreen");
+    }
+
+    reset(){
+        staticData.score=0;
+        staticData.diff_Level;
+        staticData.bestScore=0;
+        staticData.isGameBeaten=false;
+        staticData.numberOfFireworms = 0;
+        staticData.currentStage=0 ;
+
+        staticData.numOfRatDefeated =0;
+        staticData.numOfWolfDefeated =0;
+        staticData.numOfWormDefeated =0;
+        staticData.numOfCultistDefeated =0;
     }
 }
 

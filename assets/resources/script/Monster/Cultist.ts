@@ -2,6 +2,7 @@ import { _decorator, CCInteger, Component, ERaycast2DType, Node, PhysicsSystem2D
 import { HealthBar } from '../gameplay/HealthBar';
 import { Player } from '../gameplay/Player';
 import { AudioManager } from '../other/AudioManager';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Cultist')
@@ -156,11 +157,12 @@ export class Cultist extends Component {
 
     //Method yang dimainkan ketika boss mati
     dead(){
+        staticData.numOfCultistDefeated++;
         this.audio.onAudioQueue(6);
         this.playAnimation("cultDie");
         this.scheduleOnce(()=>{
             this.node.active=false;
-        },this.stunDur/2);
+        },0.5);
     }
 
     //Method serangan dari boss dengan menggunakan raycast

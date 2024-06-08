@@ -2,6 +2,7 @@ import { _decorator, CCInteger, Component, ERaycast2DType, Node, PhysicsSystem2D
 import { HealthBar } from '../gameplay/HealthBar';
 import { Player } from '../gameplay/Player';
 import { AudioManager } from '../other/AudioManager';
+import { staticData } from '../other/staticData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Wolf')
@@ -153,6 +154,7 @@ export class Wolf extends Component {
 
     //Method yang dimainkan ketika boss mati
     dead(){
+        staticData.numOfWolfDefeated++;
         this.audio.onAudioQueue(6);
         this.playAnimation("wolfHurt");
         this.scheduleOnce(()=>{

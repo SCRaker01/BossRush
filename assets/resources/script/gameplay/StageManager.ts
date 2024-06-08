@@ -29,45 +29,39 @@ export class StageManager extends Component {
 
     onLoad(){
         
-        director.preloadScene("startScreen");
+        // director.preloadScene("startScreen");
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
 
         this.playerComp = this.player.getComponent(Player);
         this.movementInfo.active = true;
 
-        if(staticData.diff_Level == 2){
-            this.bossComp.setMultiplier(1.5);
-        }
-        else if (staticData.diff_Level ==3){
-            this.bossComp.setMultiplier(2);
-        }
-        // director.preloadScene("endScreen");
         this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
-        
-
-        
-      
     }
 
     start() {
-        if(staticData.currentStage=1){
+        staticData.currentStage++;
+        if(staticData.currentStage==1){
             staticData.numberOfFireworms=2;
-        } else if (staticData.currentStage=2){
-            staticData.numberOfFireworms=3;
+            director.preloadScene("stageB")
+
+        } else if (staticData.currentStage==2){
+            staticData.numberOfFireworms=2;
+            director.preloadScene("gameplay")
+            
         } else if (staticData.currentStage=3){
-            staticData.numberOfFireworms=3;
+            staticData.numberOfFireworms=2;
         }
     }
     
     update(deltaTime: number) {
         this.playerPos = this.player.getPosition();
-        console.log(director.getScene())
+        // console.log(director.getScene())
         
         //Camera mengikuti pergerakan player dalam batas yang ditentukan
         if( this.playerPos.x>=-2000 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
-            this.movementInfo.setPosition(new Vec3(this.playerPos.x, this.movementInfo.getPosition().y,0))
+            // this.movementInfo.setPosition(new Vec3(this.playerPos.x, this.movementInfo.getPosition().y,0))
             
         }
         
@@ -76,7 +70,7 @@ export class StageManager extends Component {
         this.pScreen.setPosition(new Vec3(this.camera.getPosition().x,0,0));
         this.stopWatchLabel.node.setPosition(new Vec3(this.camera.getPosition().x,this.stopWatchLabel.node.getPosition().y,0));
        
-        if(!this.sManager.getStartStatus() ){
+        if(!this.sManager.getStartStatus()&& this.playerPos.x>-635 ){
             this.stageStart();
         }
 
@@ -87,6 +81,7 @@ export class StageManager extends Component {
         if(this.playerPos.x>1280){
             this.nextStage();
         }
+        // console.log(staticData.currentStage)
     }
 
     //Mulai stage
@@ -98,12 +93,14 @@ export class StageManager extends Component {
     }
 
     nextStage(){
+
         if(staticData.currentStage==1){
-            director.preloadScene("sceneB")
-            staticData.currentStage=2
-        }else if(staticData.currentStage==2){
-            director.preloadScene("gameplay")
-            staticData.currentStage=3
+            
+            director.loadScene("stageB")
+            
+        }else {
+            
+            director.loadScene("gameplay")
         }
     }
 
@@ -133,9 +130,25 @@ export class StageManager extends Component {
     
     //Kembali ke start screen
     exitToStart(){
+        this.reset();
         this.audio.onAudioQueue(1);
+        this.sManager.reset();
         director.resume();
         director.loadScene("startScreen");
+    }
+
+    reset(){
+        staticData.score=0;
+        staticData.diff_Level;
+        staticData.bestScore=0;
+        staticData.isGameBeaten=false;
+        staticData.numberOfFireworms = 0;
+        staticData.currentStage=0 ;
+
+        staticData.numOfRatDefeated =0;
+        staticData.numOfWolfDefeated =0;
+        staticData.numOfWormDefeated =0;
+        staticData.numOfCultistDefeated =0;
     }
 }
 

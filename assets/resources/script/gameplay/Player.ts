@@ -60,7 +60,7 @@ export class Player extends Component {
   
     private acc:number;
     private maxSpeed:number;
-   
+    private boxCollider:BoxCollider2D;
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
         input.on(Input.EventType.KEY_UP,this.keyUp,this);
@@ -68,7 +68,8 @@ export class Player extends Component {
 
         this.playerAnim = this.node.getComponent(Animation);
         this.collider = this.node.getComponent(CircleCollider2D); 
-        this.attackHitBox= this.node.getComponent(BoxCollider2D);
+        this.boxCollider = this.node.getComponent(BoxCollider2D);
+
         this.rb = this.node.getComponent(RigidBody2D);
 
         this.horizontal = 0;
@@ -93,7 +94,7 @@ export class Player extends Component {
 
     start(){
         this.collider.on(Contact2DType.BEGIN_CONTACT,this.onTouch,this);
-        
+        this.boxCollider.on(Contact2DType.BEGIN_CONTACT,this.onBoxCollider,this);
         this.curClipName = this.playerAnim.defaultClip.toString();
         
         PhysicsSystem2D.instance.gravity = v2(0, -25 * PHYSICS_2D_PTM_RATIO);
@@ -123,11 +124,11 @@ export class Player extends Component {
 
                 
                 //BERLARI
-                if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0 ){
+                if(this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0.5 ){
       
                     this.playAnimation("heroRun");
                 //DIAM
-                } else if(this.isOnGround&& this.rb.linearVelocity.x==0) {
+                } else if(this.isOnGround&& this.rb.linearVelocity.x<=0.5) {
         
                     this.playAnimation("heroIdle");
                     
@@ -135,7 +136,7 @@ export class Player extends Component {
     
             } else {
                 //ROLLING
-                if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0){
+                if(this.canRolling&&this.isOnGround&&Math.abs(this.rb.linearVelocity.x)>0.5){
                     this.canRolling = false;
                     this.playAnimation("heroRoll");
                     
@@ -165,7 +166,7 @@ export class Player extends Component {
         }
         // console.log(this.rb.linearVelocity);
     
-        
+        // console.log(this.isOnGround+" "+Math.abs(this.rb.linearVelocity.x))
     }
 
 
@@ -191,13 +192,7 @@ export class Player extends Component {
 
     //Method interaksi dengan entity lainnya
     onTouch(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
-      
-        if(otherCollider.tag==2){               //Ground
-            this.isOnGround = true;
-            this.canDoubleJump=false;
-         
-            this.audio.onAudioQueue(4);
-        }
+        
         if(otherCollider.tag==0){               //Boss
             // this.knockback();
             this.playAnimation("heroHurt");
@@ -208,6 +203,17 @@ export class Player extends Component {
 
     } 
 
+
+    onBoxCollider(selfCollider: Collider2D, otherCollider: Collider2D, contact : IPhysics2DContact|null){
+    
+        if(otherCollider.tag==2){               //Ground
+            this.isOnGround = true;
+            this.canDoubleJump=false;
+         
+            this.audio.onAudioQueue(4);
+        }
+        
+    }
 
     //Method untuk memainkan animasi jika dan hanya jika animasi yang sama belum dimainkan
     playAnimation(clipName:string){

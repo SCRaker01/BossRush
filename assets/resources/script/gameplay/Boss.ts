@@ -40,7 +40,7 @@ export class Boss extends Component {
     private attackAnimNum;
     private startStat:boolean;  //ambil dari gameManager -> scoreManager (mulai masuk area + mulai gamenya)
 
-
+    private maxHealth;
 
     onLoad(){
         this.rb = this.node.getComponent(RigidBody2D);
@@ -48,11 +48,11 @@ export class Boss extends Component {
         let parentNode = this.node.getParent();
         this.player = parentNode.getChildByName("Player");
         this.stunDur = 1;                                   //Sementar waktu untuk skellHit
-  
+        this.maxHealth = this.bossHealth
 
         this.directionVal = 1;
         this.canAttack= true;
-        this.attackCD = 3;
+        this.attackCD = 7;
         this.deadStat = false;
         this.isAttacking = false;
         this.startStat = false;
@@ -74,7 +74,8 @@ export class Boss extends Component {
         let bossPosX = this.node.getPosition().x;
         
         //Boss tidak sedang menyerang atau mati
-        if(this.startStat&&!this.deadStat && !this.isAttacking){
+        console.log(this.startStat+" "+this.deadStat+" "+this.isAttacking)
+        if(!this.deadStat && !this.isAttacking){
             if(playerPosX < bossPosX) {         //Player disebelah kiri boss
                 this.horizontal = -0.5;
                 if(!this.isFacingRight) this.flip();
@@ -88,7 +89,7 @@ export class Boss extends Component {
 
             //Jarak antara player dan boss lebih dari ukuran sprite boss + 66
             if (Math.abs(bossPosX - playerPosX)
-                    > (this.node.getComponent(UITransform).contentSize.x)+66){
+                    > (this.node.getComponent(UITransform).contentSize.x)+70){
         
                 if(this.canAttack){
                     this.spawnBullet();
@@ -122,7 +123,12 @@ export class Boss extends Component {
         }
 
     }
-
+    getHealth():number{
+        return this.bossHealth;
+    }
+    getMaxHealth():number{
+        return this.maxHealth;
+    }
     //Multiplier darah dan damage sesuai difficulty level, digunakan di GameManager
     setMultiplier(mult:number){
         this.bossDamage*=mult;

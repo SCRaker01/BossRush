@@ -242,7 +242,7 @@
     "fileId": "4deXHEpXhEo6/EF9l6vwc7"
   },
   {
-    "__type__": "6bfd5EVslFKFK9t5YMpbo0v",
+    "__type__": "af099mBTdlL/oKmrJ4PezZH",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -254,12 +254,12 @@
       "__id__": 13
     },
     "damage": 15,
-    "speed": 15,
+    "speed": 5,
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "58hky73WBM0qCxoB26Gztd"
+    "fileId": "4cb3oqE/dE+69CbU5icVaB"
   },
   {
     "__type__": "cc.PrefabInfo",

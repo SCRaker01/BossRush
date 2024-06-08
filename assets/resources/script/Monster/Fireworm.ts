@@ -82,14 +82,14 @@ export class Fireworm extends Component {
 
             if(distToPlayer<600){
 
-                if ((Math.abs(monPosX - playerPosX) > (this.node.getComponent(UITransform).contentSize.x)+500) ){
+                if ((Math.abs(monPosX - playerPosX) > (this.node.getComponent(UITransform).contentSize.x)+500)  ){
            
                      this.playAnimation("wormMove");
                     
                      this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
                     
                 }else {                 //Jarak antara boss dan player cukup untuk melakukan serangan
-                    // console.log("idle")
+  
                     this.playAnimation("wormIdle");
                     
                     // Jika ketinggian player dibawah ukuran dari sprite boss
@@ -178,6 +178,7 @@ export class Fireworm extends Component {
 
     //Method yang dimainkan ketika boss mati
     dead(){
+        staticData.numberOfFireworms++;
         this.audio.onAudioQueue(6);
         this.playAnimation("wormDie");
         staticData.numberOfFireworms--;

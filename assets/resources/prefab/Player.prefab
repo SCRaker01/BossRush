@@ -37,10 +37,13 @@
       },
       {
         "__id__": 12
+      },
+      {
+        "__id__": 14
       }
     ],
     "_prefab": {
-      "__id__": 14
+      "__id__": 16
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -157,7 +160,7 @@
       "__id__": 7
     },
     "playerDamage": 50,
-    "playerHealth": 1000,
+    "playerHealth": 500,
     "_id": ""
   },
   {
@@ -221,7 +224,7 @@
       "x": 0,
       "y": 0
     },
-    "_radius": 44,
+    "_radius": 39,
     "_id": ""
   },
   {
@@ -292,6 +295,40 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "4elJb3fspARZs5roV2nVKh"
+  },
+  {
+    "__type__": "cc.BoxCollider2D",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 15
+    },
+    "tag": 90,
+    "_group": 1,
+    "_density": 1,
+    "_sensor": false,
+    "_friction": 0.2,
+    "_restitution": 0,
+    "_offset": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": -37.4
+    },
+    "_size": {
+      "__type__": "cc.Size",
+      "width": 88,
+      "height": 5
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "40dT5+PrBFxrrfpS0ydckz"
   },
   {
     "__type__": "cc.PrefabInfo",
