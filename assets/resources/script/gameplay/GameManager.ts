@@ -60,7 +60,7 @@ export class GameManager extends Component {
 
         
         //Camera mengikuti pergerakan player dalam batas yang ditentukan
-        if( this.playerPos.x>=-1280 && this.playerPos.x<=640){
+        if( this.playerPos.x>=-2000 && this.playerPos.x<=640){
             this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
             this.movementInfo.setPosition(new Vec3(this.playerPos.x, this.movementInfo.getPosition().y,0))
             

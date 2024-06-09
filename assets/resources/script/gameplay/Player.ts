@@ -13,6 +13,7 @@ import { Rat } from '../Monster/Rat';
 import { Wolf } from '../Monster/Wolf';
 import { Cultist } from '../Monster/Cultist';
 import { Fireworm } from '../Monster/Fireworm';
+import { staticData } from '../other/staticData';
 // import { Pool } from './Pool';
 const { ccclass, property } = _decorator;
 
@@ -61,6 +62,7 @@ export class Player extends Component {
     private acc:number;
     private maxSpeed:number;
     private boxCollider:BoxCollider2D;
+
     onLoad() {
         input.on(Input.EventType.KEY_DOWN,this.keyDown,this);
         input.on(Input.EventType.KEY_UP,this.keyUp,this);
@@ -93,6 +95,7 @@ export class Player extends Component {
     }
 
     start(){
+ 
         this.collider.on(Contact2DType.BEGIN_CONTACT,this.onTouch,this);
         this.boxCollider.on(Contact2DType.BEGIN_CONTACT,this.onBoxCollider,this);
         this.curClipName = this.playerAnim.defaultClip.toString();
@@ -281,10 +284,10 @@ export class Player extends Component {
                 }
                 break;
 
-            case KeyCode.SHIFT_RIGHT:
+            case KeyCode.KEY_L:
                 if(Math.abs(this.rb.linearVelocity.x) <= this.maxSpeed){
-                    this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x*2,this.rb.linearVelocity.y)
-
+                    // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x*2,this.rb.linearVelocity.y)
+                    this.horizontal*=2;
                 }
                 break;
         }
@@ -310,7 +313,7 @@ export class Player extends Component {
 
                 
                 break;
-            case KeyCode.SHIFT_RIGHT:
+            case KeyCode.KEY_L:
                 if(Math.abs(this.horizontal)>1)this.horizontal/=2;
                 break;
         }

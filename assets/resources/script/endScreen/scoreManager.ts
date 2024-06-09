@@ -14,7 +14,7 @@ export class scoreManager extends Component {
     
     start() {
         this.score = staticData.score;
-        this.startStatus=true;
+        this.startStatus=false;
         this.gameEnd = false;
         this.timer =0;
         // this.reset();

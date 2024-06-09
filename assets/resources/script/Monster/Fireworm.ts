@@ -131,7 +131,7 @@ export class Fireworm extends Component {
         this.scheduleOnce(()=>{     //Set awal lokasi bullet, dan nyalakan node + suara    
             this.pool.node.setPosition(this.node.getPosition());
             this.audio.onAudioQueue(4);
-            this.pool.shoot(this.directionVal);
+            this.pool.shoot(this.directionVal,this.node.getPosition());
             
         },1);
     

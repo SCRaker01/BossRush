@@ -23,14 +23,14 @@ export class endManager extends Component {
     multiplyScore(){
     
         this.scoreCalc(staticData.diff_Level);
-        if(staticData.diff_Level == 1){
+        // if(staticData.diff_Level == 1){
+        //     this.level.string = "Easy";
+        //     this.level.color.set(87,241,0,255);
+        // }
+        if(staticData.diff_Level == 2){     
+            staticData.score *=1.5;
             this.level.string = "Easy";
             this.level.color.set(87,241,0,255);
-        }
-        else if(staticData.diff_Level == 2){     
-            staticData.score *=1.5;
-            this.level.string = "Medium";
-            this.level.color.set(255,208,19,255);
         }
         else if ( staticData.diff_Level ==3){
             staticData.score *=2;

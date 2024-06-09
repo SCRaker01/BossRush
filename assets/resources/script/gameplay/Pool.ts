@@ -6,33 +6,32 @@ import { staticData } from '../other/staticData';
 export class Pool extends Component {
    @property({type:Prefab}) private bullet:Prefab;
     
-    private FireWorm:Vec3;
+    // private FireWorm:Vec3;
     private playerPos:Vec3;
     private bulletPool: Node[] = [];
     private amountOfBullets:number;
 
 
     start(){
-        this.FireWorm = this.node.getParent().getChildByName("Monster").getChildByName("FireWorm").getPosition();
         this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
 
         //Instansiasi bullet
-        this.amountOfBullets = 5;
+        this.amountOfBullets = 10;
         for(let i =0 ; i < this.amountOfBullets;i++){
             let bulletPref = instantiate(this.bullet);
             this.bulletPool.push(bulletPref);
             
             bulletPref.active = false;           
-            bulletPref.getComponent(Bullet).setSpawnAndDirection(this.FireWorm,0);
+            // bulletPref.getComponent(Bullet).setSpawnAndDirection(this.FireWorm,0);
             bulletPref.setParent(this.node.getParent());
         }
 
     }
 
     update(deltaTime:number){
-        // console.log(staticData.numberOfFireworms);
+   
         if(staticData.numberOfFireworms>0){
-            this.FireWorm = this.node.getParent().getChildByName("Monster").getChildByName("FireWorm").getPosition();
+            
 
             this.playerPos = this.node.getParent().getChildByName("Player").getPosition();
 
@@ -53,13 +52,13 @@ export class Pool extends Component {
     }
 
     //Mendapatkan bullet yang ada dan mengaktifkannya
-    shoot(directionVal: number){
+    shoot(directionVal: number, pos:Vec3){
         let bullet = this.getPooledObject();
         if(bullet!=null){
             bullet.active = true;
-            bullet.getComponent(Bullet).setSpawnAndDirection(this.FireWorm,directionVal);
+            bullet.getComponent(Bullet).setSpawnAndDirection(pos,directionVal);
             bullet.getComponent(Bullet).animation.play("fireMove");
-            // console.log(bullet.getComponent(Bullet).directionVal);
+        
 
         }
     }

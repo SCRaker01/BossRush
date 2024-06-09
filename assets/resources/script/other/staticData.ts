@@ -15,19 +15,7 @@ export class staticData extends Component {
     static numOfWormDefeated:number =0;
     static numOfCultistDefeated:number =0;
 
-    reset(){
-        staticData.score=0;
-        staticData.diff_Level;
-        staticData.bestScore=0;
-        staticData.isGameBeaten=false;
-        staticData.numberOfFireworms = 0;
-        staticData.currentStage=0 ;
-
-        staticData.numOfRatDefeated =0;
-        staticData.numOfWolfDefeated =0;
-        staticData.numOfWormDefeated =0;
-        staticData.numOfCultistDefeated =0;
-    }
+    
 }
 
 
