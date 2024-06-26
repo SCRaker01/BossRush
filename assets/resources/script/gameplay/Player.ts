@@ -4,6 +4,7 @@ import { _decorator, CCFloat, Component, RigidBody2D, Vec2, CircleCollider2D,inp
     PhysicsSystem,
     geometry,
     lerp,
+    Node,
     } from 'cc';
 import { KeyCode } from 'cc';
 import { Boss } from './Boss';
@@ -25,6 +26,7 @@ export class Player extends Component {
     @property({type: CCFloat}) private playerHealth:number;
     @property({type: CCFloat}) private speed:number;
     @property({type:AudioManager}) private audio :AudioManager;
+    @property({type:Node}) private rollTimer : Node;
     
     
     private vy :number=0;
@@ -50,7 +52,7 @@ export class Player extends Component {
     private tempSpeed:number;
     private isMovingRight:boolean;
     private isMovingLeft:boolean;
-    private isMoving:boolean;
+    private isSprinting:boolean;
 
     private canDoubleJump:boolean;
     
@@ -86,7 +88,7 @@ export class Player extends Component {
 
         this.isMovingRight= false;
         this.isMovingLeft= false;
-        this.isMoving= false;
+        this.isSprinting= false;
         this.deadStat = false;
         this.isHit = false;
 
@@ -104,22 +106,24 @@ export class Player extends Component {
 
         this.heatlthBar = this.node.getParent().getChildByName("HealthContainer").getComponent(HealthBar);
         this.heatlthBar.setPlayerBaseHealth(this.playerHealth);
-        
+
+        this.rollTimer.active = false;
     }
 
     update(deltaTime: number) {
         // console.log(this.horizontal);
-        // console.log(this.playerDamage)
-        
+        // console.log(this.rb.linearVelocity.x)
+
         if(!this.deadStat){
             if(this.isHit){
                 return;
             }
             if(this.isMovingRight||this.isMovingLeft){
                 this.rb.linearVelocity = new Vec2(this.speed*this.horizontal, this.rb.linearVelocity.y);
-            }else if(!this.isMovingLeft&& !this.isMovingRight){
+            }else if(!this.isMovingLeft&& !this.isMovingRight && !this.isSprinting){
                 this.rb.linearVelocity = new Vec2( (lerp(this.horizontal,0,0.25))*this.rb.linearVelocity.x,this.rb.linearVelocity.y)
-
+            }else if(!this.isMovingLeft&& !this.isMovingRight && this.isSprinting){
+                this.rb.linearVelocity = new Vec2( this.rb.linearVelocity.x,this.rb.linearVelocity.y)
             }
 
             // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.rb.linearVelocity.y)
@@ -144,6 +148,7 @@ export class Player extends Component {
                     this.playAnimation("heroRoll");
                     
                     this.rb.linearVelocity = new Vec2(this.tempSpeed*2, this.rb.linearVelocity.y);
+
                     this.scheduleOnce(()=>{
                      
                         this.isRolling=false;
@@ -155,7 +160,10 @@ export class Player extends Component {
                 if(!this.isOnGround) this.isRolling=false;
     
                 //TIMER UNTUK BISA ROLL LAGI
-                this.scheduleOnce(()=>{this.canRolling = true;},this.rollCD);
+                this.scheduleOnce(()=>{
+                    this.canRolling = true;
+                    
+                },this.rollCD);
             }
             
             //Lompat
@@ -167,9 +175,7 @@ export class Player extends Component {
                 this.playAnimation("heroFall");
             }
         }
-        // console.log(this.rb.linearVelocity);
-    
-        // console.log(this.isOnGround+" "+Math.abs(this.rb.linearVelocity.x))
+
     }
 
 
@@ -200,8 +206,6 @@ export class Player extends Component {
             // this.knockback();
             this.playAnimation("heroHurt");
             this.rb.linearVelocity = new Vec2(this.speed*this.horizontal*-2, this.rb.linearVelocity.y);
-
-            // this.scheduleOnce(()=>{return;},0.25);
         }
 
     } 
@@ -228,13 +232,15 @@ export class Player extends Component {
 
     //Method untuk ketika mem-push keycaps 
     keyDown(event:EventKeyboard){
+
+
         switch(event.keyCode){
             case KeyCode.ARROW_RIGHT:
             case KeyCode.KEY_D:
                 if(this.isFacingRight){
                     this.flip();
                 }
-                this.isMoving = true;
+                
                 this.horizontal=1;
                 // this.rb.linearVelocity =new Vec2(Math.min(this.rb.linearVelocity.x+this.acc, this.maxSpeed ), this.rb.linearVelocity.y);
                 // this.rb.linearVelocity = new Vec2(this.speed,this.rb.linearVelocity.y)
@@ -249,7 +255,7 @@ export class Player extends Component {
                         
                 // this.rb.linearVelocity = new Vec2(-this.speed,this.rb.linearVelocity.y)
                 this.isMovingLeft = true;
-                this.isMoving = true;
+                
                 this.horizontal=-1;
                 // this.rb.linearVelocity =new Vec2(Math.min(this.rb.linearVelocity.x-this.acc, -this.maxSpeed ), this.rb.linearVelocity.y);
 
@@ -275,6 +281,7 @@ export class Player extends Component {
 
                         this.isRolling = true;
                         this.tempSpeed = this.rb.linearVelocity.x;
+                        this.activateRollTimer();
                     }
 
                 break;
@@ -285,9 +292,11 @@ export class Player extends Component {
                 break;
 
             case KeyCode.KEY_L:
-                if(Math.abs(this.rb.linearVelocity.x) <= this.maxSpeed){
+                
+                if(Math.abs(this.horizontal) == 1){
+                    this.isSprinting = true;
                     // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x*2,this.rb.linearVelocity.y)
-                    this.horizontal*=2;
+                    this.horizontal *=2;
                 }
                 break;
         }
@@ -306,15 +315,17 @@ export class Player extends Component {
             case KeyCode.KEY_A:
 
             // Ubah jangan langsung 0 ,tapi berkurang aja
-                // this.horizontal=0;
                 this.isMovingLeft = false;
                     // this.rb.linearVelocity = new Vec2(lerp(this.rb.linearVelocity.x,0,0.65),this.rb.linearVelocity.y);
-                // this.isMoving = false;
-
-                
                 break;
+
             case KeyCode.KEY_L:
-                if(Math.abs(this.horizontal)>1)this.horizontal/=2;
+                if(Math.abs(this.horizontal)==2){
+                    this.isSprinting = false;
+                    // this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x/2,this.rb.linearVelocity.y)
+                    this.horizontal/=2;
+                   
+                }
                 break;
         }
     }
@@ -329,7 +340,7 @@ export class Player extends Component {
 
                 
                 let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-                console.log(results)
+                // console.log(results)
         
                 if(results){
                     for (let j=0;j<results.length;j++){
@@ -365,30 +376,9 @@ export class Player extends Component {
                     }
 
                 }
-                // if(hit)break;
+              
             }
-        //Cari posisi awal dan akhir serangan   
-        // const worldRay = new geometry.Ray(0, -1, 0, 0, 1, 0);
-        // let p1 = new Vec2(this.node.worldPosition.x-(20*this.directionVal), this.node.worldPosition.y);
-        // let p2 = new Vec2(this.node.worldPosition.x+(75*this.directionVal), this.node.worldPosition.y);     //Dibuat jadi diagonal serangannya
-        // let mask = 0xffffffff;
 
-        // // console.log(p1.x+" "+p1.y+" "+p2.x+" "+p2.y);
-
-        // let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-
-        // if(results){
-            
-        //     if(results[0] != null && results[0].collider.tag ==0) {
-        //         results[0].collider.getComponent(Boss).receiveAttackFromPlayer(this.playerDamage);
-        //     }
-
-        // }
-
-        // let results = PhysicsSystem.instance.sweepSphere(worldRay,22,mask,Number.MAX_VALUE,true);
-        // console.log(results)
-
-        //Boolean untuk memastikan hanya 1 serangan
         this.canAttack = false;
         this.audio.onAudioQueue(6);
         this.attackAnimNum++;
@@ -416,8 +406,7 @@ export class Player extends Component {
 
             this.isHit=true;
             this.playerHealth-=damage;
-            // console.log("boss damage :"+damage);
-            // console.log("player health : "+this.playerHealth);
+
     
             this.playAnimation("heroHurt");
             this.heatlthBar.updateHealth("Player",this.playerHealth);
@@ -451,6 +440,19 @@ export class Player extends Component {
             this.node.active=false;
         },1);
     }    
+
+    
+    activateRollTimer(){
+        this.rollTimer.active=true;
+        this.scheduleOnce(()=>{
+            this.deactivateRollTimer();
+        },1.75);
+    }
+
+    deactivateRollTimer(){
+        this.rollTimer.active = false;
+    }
+
 }
 
 

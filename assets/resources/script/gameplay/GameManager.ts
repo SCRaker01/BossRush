@@ -24,6 +24,7 @@ export class GameManager extends Component {
     @property({type:Label}) private stopWatchLabel:Label;
     @property({type:scoreManager}) private sManager:scoreManager;
     @property({type:AudioManager}) private audio :AudioManager;
+    // @property({type:Node}) private rollTimer:Node;
 
     private playerPos:Vec3;
     private bossComp: Boss;
@@ -32,12 +33,12 @@ export class GameManager extends Component {
 
     onLoad(){
         
-        director.preloadScene("startScreen");
+        // director.preloadScene("startScreen");
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
         this.bossComp = this.boss.getComponent(Boss);
         this.playerComp = this.player.getComponent(Player);
-        // this.movementInfo.active = true;
+        
 
         if(staticData.diff_Level == 2){
             this.bossComp.setMultiplier(1.5);
@@ -45,14 +46,20 @@ export class GameManager extends Component {
         else if (staticData.diff_Level ==3){
             this.bossComp.setMultiplier(2);
         }
-        // director.preloadScene("endScreen");
+      
         this.camera.setPosition(new Vec3(this.playerPos.x, 0,0));
 
         this.scheduleOnce(()=>{
+            this.door.getComponent(BoxCollider2D).enabled = false ;
             this.door.getComponent(Animation).play("doorOpen");
             this.audio.onAudioQueue(3);
         },1)
         this.Monster.active = false;
+    }
+
+    start(){
+        this.stopWatchLabel.string = staticData.score+" ";
+        // this.rollTimer.active = true;
     }
     
     update(deltaTime: number) {
@@ -155,6 +162,15 @@ export class GameManager extends Component {
         staticData.numOfWormDefeated =0;
         staticData.numOfCultistDefeated =0;
     }
+
+    activateRollTimer(){
+        // this.rollTimer.active=true;
+    }
+
+    deactivateRollTimer(){
+        // this.rollTimer.active = false;
+    }
+
 }
 
 

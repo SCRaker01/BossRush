@@ -29,7 +29,7 @@ export class StageManager extends Component {
 
     onLoad(){
         
-        // director.preloadScene("startScreen");
+      
         this.pScreen.active = false;
         this.playerPos = this.player.getPosition();
 
@@ -43,15 +43,22 @@ export class StageManager extends Component {
         staticData.currentStage++;
         if(staticData.currentStage==1){
             staticData.numberOfFireworms=2;
-            director.preloadScene("stageB")
+            director.preloadScene("stageB", ()=>{
+                console.log("scene stageB has been preloaded ")
+            });
+
 
         } else if (staticData.currentStage==2){
             staticData.numberOfFireworms=2;
-            director.preloadScene("gameplay")
+            director.preloadScene("gameplay",()=>{
+                console.log("scene Boss has been preloaded ")
+
+            })
             
         } else if (staticData.currentStage=3){
             staticData.numberOfFireworms=2;
         }
+        this.stopWatchLabel.string = staticData.score+" ";
     }
     
     update(deltaTime: number) {

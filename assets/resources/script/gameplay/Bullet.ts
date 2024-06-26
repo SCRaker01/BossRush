@@ -22,7 +22,7 @@ export class Bullet extends Component {
   
     directionVal:number;
     animation :Animation;
-    
+    private saveSpeed;
 
 
     onLoad(){
@@ -30,6 +30,7 @@ export class Bullet extends Component {
         this.rb = this.node.getComponent(RigidBody2D);
         this.collider =  this.node.getComponent(CircleCollider2D);
         this.directionVal=-1;
+        this.saveSpeed = this.speed;
     }
 
     start(){
@@ -52,6 +53,7 @@ export class Bullet extends Component {
     
     //set lokasi spawn dan arah pergerakan (kanan /kiri)
     setSpawnAndDirection(pos:Vec3,direction:number){
+        this.speed=this.saveSpeed;
         let scale = this.node.getScale();
         console.log(direction)
 
@@ -85,12 +87,12 @@ export class Bullet extends Component {
             let hero = this.node.getParent().getChildByName("Player").getComponent(Player);
             hero.receiveAttackFromBoss(this.damage);
         }
-
+        this.speed=0;
         this.statusCrashing = true;
         this.scheduleOnce(()=>{
             this.node.active = false;
 
-        },0.1)
+        },0.05)
         
     } 
 

@@ -9,7 +9,9 @@ export class AudioManager extends Component {
     
     onAudioQueue(index:number){
         let clip = this.clips[index];
+        this.source.volume = 0.25;
         this.source.playOneShot(clip);
+        
     }
     
 }
