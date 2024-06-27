@@ -60,7 +60,7 @@
     },
     "autoReleaseAssets": true,
     "_globals": {
-      "__id__": 735
+      "__id__": 738
     },
     "_id": "88cac4e8-daba-4005-b0bd-96768b937eae"
   },
@@ -11925,7 +11925,7 @@
     "propertyPath": [
       "playerHealth"
     ],
-    "value": 40000
+    "value": 400
   },
   {
     "__type__": "cc.TargetInfo",
@@ -13986,7 +13986,11 @@
     "asset": null,
     "fileId": "88cac4e8-daba-4005-b0bd-96768b937eae",
     "instance": null,
-    "targetOverrides": null,
+    "targetOverrides": [
+      {
+        "__id__": 735
+      }
+    ],
     "nestedPrefabInstanceRoots": [
       {
         "__id__": 20
@@ -14099,27 +14103,58 @@
     ]
   },
   {
-    "__type__": "cc.SceneGlobals",
-    "ambient": {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 598
+    },
+    "sourceInfo": {
       "__id__": 736
     },
-    "shadows": {
+    "propertyPath": [
+      "rollTimer"
+    ],
+    "target": {
+      "__id__": 598
+    },
+    "targetInfo": {
       "__id__": 737
-    },
-    "_skybox": {
-      "__id__": 738
-    },
-    "fog": {
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "64WHEJcvlLr51jZCGypsc3"
+    ]
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "4c77LjtP9HQqmGL0GQWK+G",
+      "7f+qjqxYtNtKlPuYRsTmDg"
+    ]
+  },
+  {
+    "__type__": "cc.SceneGlobals",
+    "ambient": {
       "__id__": 739
     },
-    "octree": {
+    "shadows": {
       "__id__": 740
     },
-    "skin": {
+    "_skybox": {
       "__id__": 741
     },
-    "lightProbeInfo": {
+    "fog": {
       "__id__": 742
+    },
+    "octree": {
+      "__id__": 743
+    },
+    "skin": {
+      "__id__": 744
+    },
+    "lightProbeInfo": {
+      "__id__": 745
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

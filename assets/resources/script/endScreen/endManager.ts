@@ -46,12 +46,13 @@ export class endManager extends Component {
     //Method menghitung total score
     scoreCalc(diff_Level: number){
         let baseNumber = 100;
-        staticData.score = Math.round(Math.abs(staticData.score-baseNumber)*((staticData.numOfCultistDefeated*1.5)+(staticData.numOfRatDefeated*1.2)
+        staticData.score = Math.round(math.clamp(Math.abs(staticData.score-baseNumber),0,100)*((staticData.numOfCultistDefeated*1.5)+(staticData.numOfRatDefeated*1.2)
         +(staticData.numOfWormDefeated*1.75)+(staticData.numOfWolfDefeated*1.45))/2)
         + Math.floor((staticData.score*(Math.PI*diff_Level)));
     }
 
     start(){
+        
         this.succScreen.active = false;
         this.failedScreen.active = false;
         
@@ -70,12 +71,14 @@ export class endManager extends Component {
     //Method untuk mengulangi langsung stage dengan difficulty level yang sama
     replay(){
         this.audio.onAudioQueue(0);
+        this.resetToStageA();
         director.loadScene("stageA");
     }
     
     //Method untuk button kembalik ke start screen
     backToStart(){
         this.audio.onAudioQueue(0);
+      
         director.loadScene("startScreen");
     }
 
@@ -83,6 +86,19 @@ export class endManager extends Component {
     setScore(){
         this.bestScore.string = staticData.bestScore+"";
         this.currScore.string = staticData.score+"";
+    }
+
+    resetToStageA(){
+        staticData.score=0;
+        staticData.diff_Level;
+        staticData.isGameBeaten=false;
+        staticData.numberOfFireworms = 0;
+        staticData.currentStage=0 ;
+
+        staticData.numOfRatDefeated =0;
+        staticData.numOfWolfDefeated =0;
+        staticData.numOfWormDefeated =0;
+        staticData.numOfCultistDefeated =0;
     }
 }
 

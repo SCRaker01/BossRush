@@ -55,7 +55,7 @@ export class Bullet extends Component {
     setSpawnAndDirection(pos:Vec3,direction:number){
         this.speed=this.saveSpeed;
         let scale = this.node.getScale();
-        console.log(direction)
+        // console.log(direction)
 
         this.directionVal = direction;
         if(direction==-1){

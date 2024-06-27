@@ -163,14 +163,7 @@ export class GameManager extends Component {
         staticData.numOfCultistDefeated =0;
     }
 
-    activateRollTimer(){
-        // this.rollTimer.active=true;
-    }
-
-    deactivateRollTimer(){
-        // this.rollTimer.active = false;
-    }
-
+    
 }
 
 

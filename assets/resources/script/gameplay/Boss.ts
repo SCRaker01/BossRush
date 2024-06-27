@@ -74,7 +74,7 @@ export class Boss extends Component {
         let bossPosX = this.node.getPosition().x;
         
         //Boss tidak sedang menyerang atau mati
-        console.log(this.startStat+" "+this.deadStat+" "+this.isAttacking)
+        // console.log(this.startStat+" "+this.deadStat+" "+this.isAttacking)
         if(!this.deadStat && !this.isAttacking){
             if(playerPosX < bossPosX) {         //Player disebelah kiri boss
                 this.horizontal = -0.5;
@@ -230,7 +230,7 @@ export class Boss extends Component {
 
                 
                 let results = PhysicsSystem2D.instance.raycast(p1, p2, ERaycast2DType.All,mask);
-                console.log(results)
+                // console.log(results)
         
                 let hit =false;
                 if(results){

@@ -41,6 +41,7 @@ export class StageManager extends Component {
 
     start() {
         staticData.currentStage++;
+        
         if(staticData.currentStage==1){
             staticData.numberOfFireworms=2;
             director.preloadScene("stageB", ()=>{

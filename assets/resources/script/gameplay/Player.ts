@@ -277,7 +277,7 @@ export class Player extends Component {
                 break;
             case KeyCode.SHIFT_LEFT:
             
-                    if(this.canRolling && !this.isHit && Math.abs(this.rb.linearVelocity.x)>0){
+                    if(this.canRolling&& this.isOnGround && !this.isHit && Math.abs(this.rb.linearVelocity.x)>0){
 
                         this.isRolling = true;
                         this.tempSpeed = this.rb.linearVelocity.x;
